@@ -1,0 +1,404 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-secondary-fixed-variant": "#005236", "surface": "#faf8ff", "surface-container-high": "#e2e7ff", "on-error": "#ffffff", "outline": "#717a6d", "outline-variant": "#c0c9bb", "secondary": "#006c49", "tertiary-fixed-dim": "#ffb77d", "surface-container-low": "#f2f3ff", "error-container": "#ffdad6", "secondary-fixed": "#6ffbbe", "primary-fixed": "#acf4a4", "on-primary": "#ffffff", "on-surface-variant": "#41493e", "inverse-surface": "#283044", "on-tertiary-fixed-variant": "#6e3900", "on-primary-container": "#90d689", "on-secondary": "#ffffff", "tertiary": "#5c2f00", "primary-container": "#1b5e20", "on-tertiary-fixed": "#2f1500", "on-primary-fixed": "#002203", "background": "#faf8ff", "surface-dim": "#d2d9f4", "secondary-container": "#6cf8bb", "surface-bright": "#faf8ff", "tertiary-fixed": "#ffdcc3", "on-error-container": "#93000a", "surface-container": "#eaedff", "secondary-fixed-dim": "#4edea3", "primary-fixed-dim": "#91d78a", "inverse-primary": "#91d78a", "error": "#ba1a1a", "surface-container-highest": "#dae2fd", "on-tertiary": "#ffffff", "surface-tint": "#2a6b2c", "inverse-on-surface": "#eef0ff", "on-secondary-container": "#00714d", "surface-container-lowest": "#ffffff", "on-background": "#131b2e", "on-surface": "#131b2e", "primary": "#00450d", "on-secondary-fixed": "#002113", "surface-variant": "#dae2fd", "on-primary-fixed-variant": "#0c5216", "tertiary-container": "#7e4200", "on-tertiary-container": "#ffb579" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-desktop": "3rem", "gutter": "1rem", "gutter-tablet": "1.5rem", "margin-tablet": "2rem", "gutter-desktop": "2rem", "space-xs": "0.5rem", "space-md": "1rem", "margin": "1rem", "space-xl": "2.5rem", "space-sm": "0.75rem", "space-lg": "1.5rem" }, fontFamily: { "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"] }, fontSize: { "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }], "label-sm": ["12px", { lineHeight: "16px", fontWeight: "700" }], "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "700" }], "display-lg-mobile": ["28px", { lineHeight: "36px", fontWeight: "800" }], "label-lg": ["16px", { lineHeight: "24px", fontWeight: "700" }], "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }], "body-lg": ["18px", { lineHeight: "28px", fontWeight: "500" }], "headline-md": ["20px", { lineHeight: "28px", fontWeight: "700" }], "headline-sm": ["18px", { lineHeight: "26px", fontWeight: "600" }], "display-lg": ["36px", { lineHeight: "44px", fontWeight: "800" }], "label-md": ["14px", { lineHeight: "20px", fontWeight: "600" }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-20 px-4 flex items-center justify-between gap-3"><div class="flex items-center gap-3 min-w-0"><button aria-label="Back to previous screen" class="w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-primary active:bg-surface-container-high transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[28px]">arrow_back</span></button><div class="flex flex-col min-w-0"><h1 class="font-headline-sm text-headline-sm text-on-surface truncate tracking-tight">Krishichakra   Institutional Buyer Procurement</h1><span class="font-label-sm text-label-sm text-on-surface-variant truncate">Institutional Agri Trade Gateway</span></div></div><div class="flex items-center gap-1 shrink-0"><button aria-label="Procurement notifications and alerts" class="relative w-14 h-14 min-w-[56px] min-h-[56px] rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary active:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[26px]">notifications</span><span class="absolute top-3 right-3 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-surface"></span></button><div aria-label="Buyer Profile" class="relative flex items-center justify-center"><div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-sm ring-2 ring-surface-container-highest"><span class="material-symbols-outlined text-[20px]">business</span></div><span class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-secondary rounded-full border-2 border-surface flex items-center justify-center"><span class="material-symbols-outlined text-[10px] text-on-secondary">verified</span></span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-20 bg-surface"><div class="flex flex-col w-full pb-64">
+<!-- Top Profile & Enterprise Compliance Banner -->
+<section class="px-4 py-4 bg-surface-container-lowest shadow-sm">
+<div class="flex items-start justify-between gap-3">
+<div class="min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Sahyadri Agro Processors Ltd</h2>
+</div>
+<div class="flex items-center gap-2 mt-0.5">
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-secondary font-bold">
+<span class="material-symbols-outlined text-[16px] text-secondary" style="font-variation-settings: 'FILL' 1;">verified</span>
+            Verified Institutional Buyer
+          </span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 bg-tertiary-fixed text-on-tertiary-fixed rounded-full font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">star</span>
+            4.9
+          </span>
+</div>
+</div>
+<div class="shrink-0 flex items-center justify-center w-12 h-12 rounded-xl bg-surface-container-high text-primary">
+<span class="material-symbols-outlined text-[26px]">apartment</span>
+</div>
+</div>
+<!-- Compliance Pill Badges -->
+<div class="flex items-center gap-2 mt-3 overflow-x-auto no-scrollbar py-0.5">
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-container-low rounded-lg shrink-0">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-tight">GSTIN: <strong class="text-on-surface">27AABCS1429B1Z</strong></span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-surface-container-low rounded-lg shrink-0">
+<span class="material-symbols-outlined text-[15px] text-secondary">verified_user</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-tight">FSSAI Lic. <strong class="text-on-surface">#11521034000182</strong></span>
+</div>
+</div>
+<!-- Escrow Wallet Balance Pill -->
+<div class="mt-3 p-3 bg-surface-container rounded-xl flex items-center justify-between gap-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-9 h-9 rounded-lg bg-primary-container text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">Agri-Escrow Balance</p>
+<p class="font-headline-sm text-headline-sm text-primary truncate">₹12.50 Lakhs <span class="font-body-sm text-body-sm text-secondary font-medium">Liquid</span></p>
+</div>
+</div>
+<button class="h-10 px-3.5 bg-surface-container-lowest text-primary rounded-lg font-label-md text-label-md shadow-sm active:scale-95 transition-transform shrink-0 flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span class="">Top-up</span>
+</button>
+</div>
+</section>
+<!-- High-Impact Available Farm Batch Card -->
+<section class="px-4 mt-4">
+<div class="bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm">
+<!-- Media Header with Quality Assay Badge Overlay -->
+<div class="relative w-full h-48 bg-surface-container-highest">
+<img class="w-full h-full object-cover" data-alt="Commercial cold storage warehouse floor with stacks of graded vibrant red onions in aerated blue agricultural crates, illuminated by natural diffuse packing house skylight with agricultural barcode traceability stickers visible on harvest bins, high clarity editorial commercial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq8l_91Gy59uYGQQTFXrN6W1tGtr_LTIfJ0k00D2uEo_tDb3oRd95pQ61KNiQl75wM9ifehUVXt_TttushEW7d3q7scub3nHwoZpmUAPwo0HfPPM0Kh_tbetBGjauBepKe7SeqGleJdQSL_JQpdxCtnKhj1BWPsALaFXmKyFMtoMOYOzh9mTIVCNb-r7ZD32tTiZinraEGshrjps20Ik64cL37dEx1W6eyFQcGd_sFTQmvEh6gcGv0fw">
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-inverse-surface/20 to-transparent"></div>
+<div class="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-lowest/95 backdrop-blur-md shadow-sm">
+<span class="material-symbols-outlined text-[16px] text-secondary">verified</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">AgriStack Verified Lot</span>
+</div>
+<div class="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full bg-primary-container text-on-primary text-label-sm font-bold shadow-sm">
+<span class="material-symbols-outlined text-[14px]">sell</span>
+<span class="">LOT #FPO-PUN-402</span>
+</div>
+<!-- Assay Stamp Tag Overlay -->
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-surface-container-lowest">
+<div class="flex items-center gap-2">
+<span class="flex items-center justify-center w-8 h-8 rounded-full bg-secondary text-on-secondary">
+<span class="material-symbols-outlined text-[18px]">fact_check</span>
+</span>
+<div>
+<p class="font-label-sm text-label-sm text-primary-fixed uppercase tracking-wider font-bold">Digital Assay Certified</p>
+<p class="font-headline-sm text-headline-sm text-surface-container-lowest font-bold">Grade A Assayed • 100% Passed</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Batch Details Body -->
+<div class="p-4 flex flex-col gap-3">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface">20 Metric Tonnes Bulk Batch</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[16px] text-primary">groups</span>
+<span class="">Junnar Farmer Producer Co. • 412 Smallholders Aggregated</span>
+</p>
+</div>
+<!-- Key Assay Metrics Strip -->
+<div class="grid grid-cols-3 gap-2 py-1">
+<div class="p-2.5 bg-surface-container-low rounded-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant block truncate">Uniformity</span>
+<span class="font-label-lg text-label-lg text-on-surface block mt-0.5 font-bold">88%</span>
+<span class="font-body-sm text-[11px] text-secondary block truncate">52-58 mm</span>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant block truncate">Field Quality</span>
+<span class="font-label-lg text-label-lg text-on-surface block mt-0.5 font-bold">Clean Skin</span>
+<span class="font-body-sm text-[11px] text-secondary block truncate">0% Defect/Rot</span>
+</div>
+<div class="p-2.5 bg-surface-container-low rounded-lg">
+<span class="font-label-sm text-label-sm text-on-surface-variant block truncate">Moisture</span>
+<span class="font-label-lg text-label-lg text-on-surface block mt-0.5 font-bold">12.0%</span>
+<span class="font-body-sm text-[11px] text-secondary block truncate">Optimal Shelf</span>
+</div>
+</div>
+<!-- Geographic & Logistics Context Pill -->
+<div class="p-3 bg-surface-container rounded-xl flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[20px] text-primary shrink-0 mt-0.5">local_shipping</span>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-on-surface font-semibold">Origin: Junnar Hub, Pune</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">94 km from your Dindori Plant • ~2.5 hrs transit window</p>
+</div>
+</div>
+<!-- Asking Rate Bar -->
+<div class="flex items-center justify-between p-3.5 bg-surface-container-low rounded-xl">
+<div>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block">Asking Base Rate</span>
+<span class="font-headline-lg text-headline-lg text-primary font-bold">₹2,450 <span class="font-label-md text-label-md text-on-surface-variant font-normal">/ Quintal</span></span>
+</div>
+<div class="text-right">
+<span class="font-label-sm text-label-sm text-secondary font-bold block">₹24.50 / kg</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total: ₹4,90,000</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Bidding & Payment Terms Box (Enterprise Contract Builder) -->
+<section class="px-4 mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">gavel</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Binding Offer Terms</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Configure enterprise purchase order</p>
+</div>
+</div>
+<span class="px-2.5 py-1 bg-surface-container-high text-primary rounded-full font-label-sm text-label-sm font-semibold">200 Quintals</span>
+</div>
+<!-- Interactive Bid Rate Stepper & Pills -->
+<div class="p-3.5 bg-surface-container-low rounded-xl flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface font-semibold" for="bid-input">Your Binding Offer Rate</label>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Base: ₹2,450</span>
+</div>
+<div class="flex items-center gap-2">
+<button aria-label="Decrease offer rate" class="w-14 h-14 min-w-[56px] min-h-[56px] rounded-lg bg-surface-container-lowest text-primary shadow-sm active:scale-90 transition-transform flex items-center justify-center font-headline-md text-headline-md" id="bid-decrement" type="button">
+<span class="material-symbols-outlined text-[24px]">remove</span>
+</button>
+<div class="flex-1 h-14 min-h-[56px] bg-surface-container-lowest rounded-lg shadow-inner flex items-center px-4 justify-center gap-1">
+<span class="font-headline-md text-headline-md text-on-surface-variant font-bold">₹</span>
+<input aria-label="Offer rate per quintal" class="w-28 text-center bg-transparent font-headline-lg text-headline-lg font-extrabold text-on-surface focus:outline-none" id="bid-input" step="10" type="number" value="2400">
+<span class="font-body-sm text-body-sm text-on-surface-variant">/ Q</span>
+</div>
+<button aria-label="Increase offer rate" class="w-14 h-14 min-w-[56px] min-h-[56px] rounded-lg bg-surface-container-lowest text-primary shadow-sm active:scale-90 transition-transform flex items-center justify-center font-headline-md text-headline-md" id="bid-increment" type="button">
+<span class="material-symbols-outlined text-[24px]">add</span>
+</button>
+</div>
+<!-- Quick Rate Presets -->
+<div class="grid grid-cols-3 gap-2">
+<button class="h-11 rounded-lg bg-surface-container-lowest font-label-sm text-label-sm text-on-surface shadow-sm active:bg-surface-container-high transition-colors" onclick="setBidRate(2350)" type="button">
+            ₹2,350
+          </button>
+<button class="h-11 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-bold shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-0.5" onclick="setBidRate(2400)" type="button">
+<span class="">₹2,400</span>
+<span class="text-[10px] opacity-80">(Rec.)</span>
+</button>
+<button class="h-11 rounded-lg bg-surface-container-lowest font-label-sm text-label-sm text-on-surface shadow-sm active:bg-surface-container-high transition-colors" onclick="setBidRate(2450)" type="button">
+            ₹2,450 (Ask)
+          </button>
+</div>
+<!-- Dynamic Calculation Bar -->
+<div class="p-3 bg-surface-container-lowest rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-secondary">calculate</span>
+<span class="font-label-sm text-label-sm">Gross Commitment</span>
+</div>
+<div class="text-right">
+<span class="font-headline-sm text-headline-sm text-primary font-bold" id="deal-total">₹4,80,000</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant block">200 Q (20 MT)</span>
+</div>
+</div>
+</div>
+<!-- Payment Settlement Selector -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">security</span>
+          Payment Settlement Condition
+        </label>
+<!-- Option A (Default Selected) -->
+<label class="p-3.5 rounded-xl bg-surface-container-low cursor-pointer flex items-start gap-3 transition-colors">
+<input checked="" class="mt-1 w-5 h-5 accent-primary text-primary" name="settlement_terms" type="radio" value="100_weighbridge">
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-bold">100% on Factory Weighbridge</span>
+<span class="px-2 py-0.5 rounded bg-secondary text-on-secondary text-[11px] font-bold">Recommended</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Automated electronic QC check &amp; instantaneous e-NWR receipt release at plant gate.</p>
+</div>
+</label>
+<!-- Option B -->
+<label class="p-3.5 rounded-xl bg-surface-container-lowest cursor-pointer flex items-start gap-3 transition-colors">
+<input class="mt-1 w-5 h-5 accent-primary text-primary" name="settlement_terms" type="radio" value="50_50_split">
+<div class="min-w-0 flex-1">
+<span class="font-label-md text-label-md text-on-surface font-bold block">50% Advance + 50% Post-Unload</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">50% released upon Junnar gate dispatch; balance settled after inspection.</p>
+</div>
+</label>
+</div>
+<!-- Logistics Responsibility Selector -->
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">forklift</span>
+          Transport &amp; Logistics Terms
+        </label>
+<!-- Transport Option 1 (Selected) -->
+<label class="p-3 rounded-xl bg-surface-container-low cursor-pointer flex items-start gap-3">
+<input checked="" class="mt-1 w-5 h-5 accent-primary text-primary" name="logistics_terms" type="radio" value="fpo_delivery">
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface font-bold">FPO Delivers to Plant</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">+₹90/Q Included</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Delivered directly to Sahyadri Dindori facility with transit insurance.</p>
+</div>
+</label>
+<!-- Transport Option 2 -->
+<label class="p-3 rounded-xl bg-surface-container-lowest cursor-pointer flex items-start gap-3">
+<input class="mt-1 w-5 h-5 accent-primary text-primary" name="logistics_terms" type="radio" value="buyer_pickup">
+<div class="min-w-0 flex-1">
+<span class="font-label-md text-label-md text-on-surface font-bold block">Buyer Arranges Fleet</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Dock collection at Junnar Hub; loading bay assigned automatically.</p>
+</div>
+</label>
+</div>
+<!-- Escrow Lock Guarantee Notice -->
+<div class="p-3.5 bg-surface-container rounded-xl flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[22px] text-primary shrink-0 mt-0.5">lock</span>
+<div class="min-w-0">
+<p class="font-label-md text-label-md text-primary font-bold">Agri-Escrow Protection</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5 leading-snug">
+<strong class="text-on-surface" id="escrow-ringfence-text">₹4,80,000</strong> will be ring-fenced from your ₹12.50L Escrow balance. Disbursed to Junnar FPO only after automated weighbridge and assay sign-off.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contract Summary & Statutory Breakdown -->
+<section class="px-4 mt-4">
+<div class="bg-surface-container-lowest rounded-xl p-4 shadow-sm flex flex-col gap-3">
+<h4 class="font-label-lg text-label-lg text-on-surface font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">policy</span>
+        Statutory &amp; Institutional Exemptions
+      </h4>
+<div class="flex flex-col gap-2.5">
+<div class="flex items-start justify-between gap-3 pb-2 border-b-0">
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-on-surface block">APMC Cess &amp; Mandi User Fee</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Direct B2B e-NAM FPO Purchase under Sec 31</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed-variant font-label-sm text-label-sm font-bold shrink-0">
+            Exempted (₹0)
+          </span>
+</div>
+<div class="flex items-start justify-between gap-3">
+<div class="min-w-0">
+<span class="font-label-md text-label-md text-on-surface block">Digital e-Way Bill &amp; GST Invoice</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Auto-generated upon batch gate-out confirmation</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold shrink-0 flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">flash_on</span> Auto
+          </span>
+</div>
+</div>
+</div>
+</section>
+<!-- Accessible Audio Voice Overview Assist -->
+<section class="px-4 mt-4">
+<button aria-label="Play commercial batch summary audio narration" class="w-full h-14 min-h-[56px] rounded-xl bg-surface-container-lowest shadow-sm flex items-center justify-between px-4 text-primary active:bg-surface-container-high transition-colors" id="audio-helper-btn" type="button">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-[24px] text-primary">volume_up</span>
+<span class="font-label-md text-label-md text-primary font-bold">Listen to Commercial Lot Summary</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">0:42 sec</span>
+</button>
+</section>
+<!-- Bottom Sticky Action Dock -->
+<div class="fixed left-0 right-0 z-40 bg-surface-container-lowest/95 backdrop-blur-lg px-4 pt-3 pb-safe shadow-[0_-4px_20px_rgba(15,23,42,0.08)] bottom-20">
+<div class="max-w-md mx-auto flex flex-col gap-2 pb-2">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total Escrow Ring-fence</span>
+<span class="font-headline-sm text-headline-sm text-primary font-extrabold" id="dock-amount">₹4,80,000</span>
+</div>
+<button class="w-full h-14 min-h-[56px] rounded-xl bg-primary text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md active:scale-[0.98] transition-transform" id="submit-bid-btn" type="button">
+<span class="">Submit Official Bid &amp; Lock Funds</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+<p class="font-body-sm text-[11px] text-center text-on-surface-variant leading-tight">
+        Legally binding commercial contract governed under e-NAM &amp; Model APMC Act guidelines.
+      </p>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    const input = document.getElementById('bid-input');
+    const decBtn = document.getElementById('bid-decrement');
+    const incBtn = document.getElementById('bid-increment');
+    const totalEl = document.getElementById('deal-total');
+    const dockAmount = document.getElementById('dock-amount');
+    const ringfenceEl = document.getElementById('escrow-ringfence-text');
+    const submitBtn = document.getElementById('submit-bid-btn');
+    const audioBtn = document.getElementById('audio-helper-btn');
+    const quintals = 200;
+
+    function formatINR(val) {
+      return '₹' + Number(val).toLocaleString('en-IN');
+    }
+
+    function updateCalculations() {
+      let rate = parseInt(input.value, 10) || 0;
+      if (rate < 1000) rate = 1000;
+      if (rate > 5000) rate = 5000;
+      input.value = rate;
+
+      const total = rate * quintals;
+      const formatted = formatINR(total);
+      if (totalEl) totalEl.textContent = formatted;
+      if (dockAmount) dockAmount.textContent = formatted;
+      if (ringfenceEl) ringfenceEl.textContent = formatted;
+    }
+
+    window.setBidRate = function(val) {
+      if (input) {
+        input.value = val;
+        updateCalculations();
+      }
+    };
+
+    if (decBtn && input) {
+      decBtn.addEventListener('click', () => {
+        let val = parseInt(input.value, 10) || 2400;
+        input.value = Math.max(1000, val - 10);
+        updateCalculations();
+      });
+    }
+
+    if (incBtn && input) {
+      incBtn.addEventListener('click', () => {
+        let val = parseInt(input.value, 10) || 2400;
+        input.value = Math.min(5000, val + 10);
+        updateCalculations();
+      });
+    }
+
+    if (input) {
+      input.addEventListener('change', updateCalculations);
+      input.addEventListener('input', updateCalculations);
+    }
+
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        const currentRate = input ? input.value : '2400';
+        const formattedTotal = formatINR((parseInt(currentRate, 10) || 2400) * quintals);
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span><span>Securing Agri-Escrow...</span>';
+        
+        setTimeout(() => {
+          submitBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">check_circle</span><span>Contract Active & Ring-Fenced</span>';
+          submitBtn.classList.remove('bg-primary');
+          submitBtn.classList.add('bg-secondary');
+        }, 1200);
+      });
+    }
+
+    if (audioBtn) {
+      let isPlaying = false;
+      audioBtn.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          audioBtn.classList.add('bg-surface-container-high');
+          audioBtn.querySelector('span:nth-child(2)').textContent = 'Playing: Grade A Junnar Batch 20MT Overview...';
+        } else {
+          audioBtn.classList.remove('bg-surface-container-high');
+          audioBtn.querySelector('span:nth-child(2)').textContent = 'Listen to Commercial Lot Summary';
+        }
+      });
+    }
+  })();
+</script></main>
+
+<nav class="fixed bottom-0 left-0 right-0 z-50 bg-surface-container-lowest/95 backdrop-blur-lg border-t border-surface-container-highest pb-safe"><div class="max-w-md mx-auto h-20 px-2 flex items-center justify-around"><button type="button" class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-[11px] mt-1">Home</span></button><button type="button" class="flex flex-col items-center justify-center flex-1 py-1 text-primary font-bold transition-colors"><span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">storefront</span><span class="font-label-sm text-[11px] mt-1">Markets</span></button><button type="button" class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[24px]">inventory_2</span><span class="font-label-sm text-[11px] mt-1">My Lots</span></button><button type="button" class="flex flex-col items-center justify-center flex-1 py-1 text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[24px]">person</span><span class="font-label-sm text-[11px] mt-1">Profile</span></button></div></nav></body></html>

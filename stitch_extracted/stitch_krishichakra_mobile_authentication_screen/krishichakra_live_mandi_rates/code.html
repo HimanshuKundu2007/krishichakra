@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior: none; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-surface": "#131b2e", "on-primary": "#ffffff", "on-tertiary-fixed-variant": "#6e3900", "outline": "#717a6d", "inverse-on-surface": "#eef0ff", "error": "#ba1a1a", "secondary-fixed": "#6ffbbe", "secondary-fixed-dim": "#4edea3", "surface-tint": "#2a6b2c", "surface-container-high": "#e2e7ff", "on-tertiary-fixed": "#2f1500", "on-error": "#ffffff", "primary": "#00450d", "background": "#faf8ff", "outline-variant": "#c0c9bb", "on-secondary": "#ffffff", "surface-variant": "#dae2fd", "on-primary-fixed-variant": "#0c5216", "on-surface-variant": "#41493e", "on-tertiary": "#ffffff", "error-container": "#ffdad6", "surface-container-low": "#f2f3ff", "surface-container-lowest": "#ffffff", "on-secondary-fixed": "#002113", "on-primary-fixed": "#002203", "on-background": "#131b2e", "on-secondary-container": "#00714d", "surface-dim": "#d2d9f4", "on-error-container": "#93000a", "surface": "#faf8ff", "surface-bright": "#faf8ff", "on-primary-container": "#90d689", "inverse-primary": "#91d78a", "primary-container": "#1b5e20", "inverse-surface": "#283044", "secondary-container": "#6cf8bb", "surface-container-highest": "#dae2fd", "primary-fixed": "#acf4a4", "tertiary-fixed-dim": "#ffb77d", "surface-container": "#eaedff", "primary-fixed-dim": "#91d78a", "tertiary-fixed": "#ffdcc3", "secondary": "#006c49", "tertiary": "#5c2f00", "on-tertiary-container": "#ffb579", "tertiary-container": "#7e4200", "on-secondary-fixed-variant": "#005236" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "margin-desktop": "3rem", "margin-tablet": "2rem", "space-xl": "2.5rem", "gutter-desktop": "2rem", "gutter": "1rem", "space-md": "1rem", "space-sm": "0.75rem", "space-lg": "1.5rem", "margin": "1rem", "space-xs": "0.5rem", "gutter-tablet": "1.5rem" }, fontFamily: { "headline-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Plus Jakarta Sans"], "body-lg": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "display-lg": ["Plus Jakarta Sans"], "display-lg-mobile": ["Plus Jakarta Sans"], "body-md": ["Plus Jakarta Sans"] }, fontSize: { "headline-sm": ["18px", { "lineHeight": "26px", "fontWeight": "600" }], "label-md": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "700" }], "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "700" }], "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "700" }], "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "500" }], "label-lg": ["16px", { "lineHeight": "24px", "fontWeight": "700" }], "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "display-lg": ["36px", { "lineHeight": "44px", "fontWeight": "800" }], "display-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "800" }], "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }] } } } };</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-space-md flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-xs flex-1 min-w-0"><button aria-label="Go Back" class="w-14 h-14 min-w-[56px] min-h-[56px] rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container active:bg-surface-container-high transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex flex-col min-w-0 pr-space-xs"><h1 class="font-headline-md text-headline-md text-on-surface truncate leading-tight">Live Mandi Rates</h1><div class="flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-[14px] text-secondary">location_on</span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium truncate">Junnar, Pune</span><span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim ml-0.5"></span></div></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Voice Assist" class="w-14 h-14 min-w-[56px] min-h-[56px] rounded-lg flex items-center justify-center text-primary-container bg-surface-container-low hover:bg-surface-container active:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[22px]">volume_up</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-20 bg-surface px-space-md"><div class="flex flex-col w-full pb-6 space-y-4">
+<!-- Search & Voice Assist Field -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center w-full h-14 bg-surface-container-lowest rounded-xl shadow-sm px-3 gap-2">
+<span class="material-symbols-outlined text-primary-container text-[24px]">search</span>
+<input class="flex-1 bg-transparent font-body-lg text-body-lg text-on-surface placeholder:text-outline focus:outline-none min-w-0" id="crop-search-input" placeholder="Search crop e.g. Onion, Tomato, Soybean" type="text" value="Nashik Red Onion"/>
+<button aria-label="Voice Search Crop" class="w-11 h-11 rounded-lg bg-surface-container-low text-primary-container hover:bg-surface-container active:scale-95 transition-all flex items-center justify-center shrink-0" id="voice-mic-btn">
+<span class="material-symbols-outlined text-[22px]">mic</span>
+</button>
+</div>
+<div class="flex items-center gap-1.5 px-1">
+<span class="material-symbols-outlined text-secondary text-[16px]">tune</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Filtered for Junnar &amp; neighbouring mandis</span>
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">e-NAM Verified</span>
+</div>
+</div>
+<!-- Crop Selector Ribbon -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between px-0.5">
+<span class="font-label-md text-label-md text-on-surface">Select Commodity</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Grade A / FAQs</span>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-space-md px-space-md">
+<!-- Onion (Active) -->
+<button class="h-14 px-5 rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg flex items-center gap-2.5 shrink-0 shadow-sm transition-transform active:scale-95">
+<span class="text-[20px]">🧅</span>
+<span>Red Onion</span>
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+</button>
+<!-- Tomato -->
+<button class="h-14 px-5 rounded-xl bg-surface-container-lowest text-on-surface font-label-lg text-label-lg flex items-center gap-2.5 shrink-0 shadow-sm hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="text-[20px]">🍅</span>
+<span>Tomato</span>
+</button>
+<!-- Soybean -->
+<button class="h-14 px-5 rounded-xl bg-surface-container-lowest text-on-surface font-label-lg text-label-lg flex items-center gap-2.5 shrink-0 shadow-sm hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="text-[20px]">🌱</span>
+<span>Soybean</span>
+</button>
+<!-- Pomegranate -->
+<button class="h-14 px-5 rounded-xl bg-surface-container-lowest text-on-surface font-label-lg text-label-lg flex items-center gap-2.5 shrink-0 shadow-sm hover:bg-surface-container-low active:scale-95 transition-all">
+<span class="text-[20px]">🍎</span>
+<span>Pomegranate</span>
+</button>
+</div>
+</div>
+<!-- Radius Filter Segmented Control -->
+<div class="w-full bg-surface-container-low p-1 rounded-xl grid grid-cols-3 gap-1 shadow-xs">
+<button class="h-12 rounded-lg font-label-sm text-label-sm text-on-surface-variant font-medium hover:bg-surface-container-lowest/50 transition-all flex items-center justify-center text-center">
+      Within 50 km
+    </button>
+<button class="h-12 rounded-lg bg-surface-container-lowest shadow-sm font-label-sm text-label-sm text-primary-container font-bold transition-all flex items-center justify-center text-center">
+      Within 150 km
+    </button>
+<button class="h-12 rounded-lg font-label-sm text-label-sm text-on-surface-variant font-medium hover:bg-surface-container-lowest/50 transition-all flex items-center justify-center text-center">
+      All Maharashtra
+    </button>
+</div>
+<!-- Map View Card -->
+<div class="relative w-full h-60 bg-surface-container rounded-2xl overflow-hidden shadow-md flex flex-col justify-between">
+<!-- SVG Vector Map Graphic of Pune-Nashik-Mumbai Transit Triangle -->
+<svg class="absolute inset-0 w-full h-full object-cover" fill="none" preserveaspectratio="xMidYMid slice" viewbox="0 0 360 240" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#E8EDFA" height="240" width="360"></rect>
+<!-- Soft agrarian zones -->
+<path d="M-20 60 C80 40, 160 120, 380 70 L380 250 L-20 250 Z" fill="#DEE6F8" opacity="0.85"></path>
+<path d="M120 -10 C180 30, 240 70, 380 40 L380 0 Z" fill="#DAE2FD" opacity="0.6"></path>
+<!-- Transit Corridors (Highways) -->
+<!-- NH60 Nashik-Pune corridor -->
+<path d="M180 20 L160 115 L145 200" stroke="#CBD5E1" stroke-linecap="round" stroke-width="4"></path>
+<path d="M180 20 L160 115 L145 200" stroke="#94A3B8" stroke-dasharray="4 4" stroke-linecap="round" stroke-width="2"></path>
+<!-- Mumbai-Pune Expressway Corridor -->
+<path d="M50 140 C85 145, 120 170, 145 200" stroke="#CBD5E1" stroke-linecap="round" stroke-width="4"></path>
+<path d="M50 140 C85 145, 120 170, 145 200" stroke="#006C49" stroke-linecap="round" stroke-opacity="0.3" stroke-width="3"></path>
+<!-- Junnar to Vashi Transit Link -->
+<path d="M160 115 C110 118, 75 130, 50 140" stroke="#10B981" stroke-dasharray="6 3" stroke-linecap="round" stroke-width="3"></path>
+<!-- Terrain contours -->
+<circle cx="160" cy="115" fill="#10B981" fill-opacity="0.08" r="36"></circle>
+<circle cx="50" cy="140" fill="#006C49" fill-opacity="0.12" r="44"></circle>
+</svg>
+<!-- Top Overlay Badge: Live Status -->
+<div class="relative z-10 flex items-center justify-between p-3">
+<div class="flex items-center gap-1.5 bg-surface-container-lowest/90 backdrop-blur-md px-2.5 py-1.5 rounded-full shadow-xs">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+</span>
+<span class="font-label-sm text-label-sm text-on-surface font-bold">Western MH Corridor</span>
+</div>
+<button class="bg-surface-container-lowest/95 backdrop-blur-md text-primary-container p-2 rounded-xl shadow-xs hover:bg-surface-container-lowest active:scale-90 transition-transform" onclick="document.getElementById('audio-playback-banner').classList.toggle('hidden')">
+<span class="material-symbols-outlined text-[18px]">layers</span>
+</button>
+</div>
+<!-- Map Interactive Pins & Bubbles -->
+<div class="relative z-10 w-full h-full pointer-events-none">
+<!-- Pin 1: Vashi Terminal (Top right-left edge: ₹2,800/Q High Demand) -->
+<div class="absolute left-6 top-16 pointer-events-auto transform transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+<div class="relative flex flex-col items-center">
+<div class="flex items-center gap-1 bg-primary-container text-on-primary px-2.5 py-1.5 rounded-full shadow-lg">
+<span class="font-headline-sm text-headline-sm font-extrabold tracking-tight">₹2,800</span>
+<span class="material-symbols-outlined text-[16px] text-secondary-container">trending_up</span>
+</div>
+<div class="flex items-center gap-1 mt-0.5 bg-secondary-container px-2 py-0.5 rounded-full shadow-xs">
+<span class="font-label-sm text-[10px] leading-tight text-on-secondary-fixed font-bold uppercase tracking-wider">Vashi • High Demand</span>
+</div>
+<span class="w-2.5 h-2.5 bg-primary-container rotate-45 -mt-1 shadow-sm"></span>
+</div>
+</div>
+<!-- Pin 2: Pune Gultekdi (Bottom right: ₹2,450/Q) -->
+<div class="absolute right-10 bottom-11 pointer-events-auto transform transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+<div class="relative flex flex-col items-center">
+<div class="flex items-center gap-1 bg-surface-container-lowest text-on-surface px-2.5 py-1 rounded-full shadow-md">
+<span class="font-label-md text-label-md font-bold">Pune: ₹2,450</span>
+</div>
+<span class="w-2 h-2 bg-surface-container-lowest rotate-45 -mt-1 shadow-xs"></span>
+</div>
+</div>
+<!-- Pin 3: You Are Here (Junnar Center: ₹2,100/Q) -->
+<div class="absolute left-36 top-12 pointer-events-auto flex flex-col items-center">
+<div class="flex items-center gap-1 bg-surface-container-high text-on-surface px-2 py-0.5 rounded-full shadow-xs">
+<span class="font-label-sm text-[10px] text-on-surface-variant font-bold">Junnar Local ₹2,100</span>
+</div>
+<div class="relative mt-0.5 flex items-center justify-center">
+<span class="animate-ping absolute inline-flex h-4 w-4 rounded-full bg-secondary opacity-60"></span>
+<div class="w-3.5 h-3.5 rounded-full bg-secondary ring-2 ring-surface-container-lowest shadow-sm flex items-center justify-center text-[8px] text-on-secondary font-bold"></div>
+</div>
+<span class="font-label-sm text-[10px] font-bold text-on-surface bg-surface-container-lowest/90 px-1 rounded mt-0.5">You are here</span>
+</div>
+</div>
+<!-- Map Info Footer Bar -->
+<div class="relative z-10 w-full bg-on-surface/90 backdrop-blur-md px-3 py-2 flex items-center justify-between text-inverse-on-surface">
+<div class="flex items-center gap-1.5 text-xs truncate">
+<span class="material-symbols-outlined text-[16px] text-secondary-container">route</span>
+<span class="font-label-sm text-label-sm tracking-tight truncate">Tap pin for highway toll &amp; transit estimate</span>
+</div>
+<div class="flex items-center gap-1 shrink-0 ml-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed-dim"></span>
+<span class="font-label-sm text-[11px] font-semibold text-secondary-container">Live e-NAM</span>
+</div>
+</div>
+</div>
+<!-- Audio Guidance Notification Bar -->
+<div class="w-full bg-secondary-container/40 p-3 rounded-2xl flex items-center justify-between gap-3 shadow-xs" id="audio-playback-banner">
+<div class="flex items-center gap-2.5">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[20px] animate-pulse">volume_up</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Audio Rate Summary</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Vashi terminal leads by +₹700/Q over Junnar local</span>
+</div>
+</div>
+<button class="h-10 px-3.5 rounded-lg bg-primary-container text-on-primary font-label-sm text-label-sm font-bold flex items-center gap-1 shrink-0 active:scale-95 shadow-xs">
+<span>Play</span>
+<span class="material-symbols-outlined text-[16px]">play_arrow</span>
+</button>
+</div>
+<!-- Verified Mandis List Section -->
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-center justify-between px-0.5">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">3 Verified Mandis</h2>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Sorted: Net Realization</span>
+</div>
+<!-- MANDI CARD 1: Vashi APMC Terminal (Top Recommended) -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3.5 relative overflow-hidden">
+<!-- High Demand Highlight Accent -->
+<div class="absolute top-0 left-0 right-0 h-1.5 bg-primary-container"></div>
+<div class="flex items-start justify-between gap-2 pt-0.5">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm font-bold tracking-wide uppercase">
+              Highest Demand
+            </span>
+<span class="font-label-sm text-label-sm text-secondary font-bold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">verified</span> Real-time buyer bids
+            </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1 font-extrabold truncate">
+            Vashi APMC Terminal
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-outline">near_me</span>
+<span>120 km away • approx 3.5 hrs via NH60 / Mumbai Expy</span>
+</p>
+</div>
+<div class="w-11 h-11 rounded-xl bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[24px]">local_shipping</span>
+</div>
+</div>
+<!-- Volume & Buyer Metrics -->
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-low p-2.5 rounded-xl flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Daily Arrivals</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">14,200 Q</span>
+<span class="font-body-sm text-[12px] text-secondary font-semibold mt-0.5">Heavy institutional inflow</span>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-xl flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Active Buyers</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold mt-0.5">42 Verified Traders</span>
+<span class="font-body-sm text-[12px] text-secondary font-semibold mt-0.5">Quick unload turnaround</span>
+</div>
+</div>
+<!-- Price Breakdown Metrics Strip -->
+<div class="bg-surface-container-lowest p-3 rounded-xl shadow-xs flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Min Rate</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">₹2,400</span>
+</div>
+<div class="flex flex-col items-center bg-primary-container text-on-primary px-4 py-1.5 rounded-xl shadow-xs">
+<span class="font-label-sm text-label-sm uppercase tracking-wider opacity-90 font-medium">Modal / Realized</span>
+<span class="font-display-lg-mobile text-display-lg-mobile font-extrabold leading-none my-0.5">₹2,800</span>
+<span class="font-label-sm text-[11px] opacity-90">per Quintal</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Max Rate</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">₹3,200</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1 border-t border-surface-container-high/60">
+<div class="flex items-center gap-1 text-secondary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span>+₹150 since yesterday (Steady Uptrend)</span>
+</div>
+<span class="font-label-sm text-[11px] text-on-surface-variant">e-NAM Gate Sync 11:30 AM</span>
+</div>
+</div>
+<!-- Net realization calculation summary box -->
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-tertiary-fixed/30 text-on-tertiary-fixed">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-tertiary">savings</span>
+<span class="font-body-sm text-body-sm font-semibold">Est. Freight: ₹180/Q • Net Gain: <span class="font-bold text-primary-container">+₹520/Q net</span></span>
+</div>
+<span class="material-symbols-outlined text-[16px]">info</span>
+</div>
+<!-- Main CTA Button -->
+<button class="w-full h-14 rounded-xl bg-primary-container text-on-primary font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 shadow-md hover:bg-primary active:scale-[0.99] transition-all">
+<span>Calculate Net Cash Payout</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- MANDI CARD 2: Pune Gultekdi APMC Yard -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-label-sm text-label-sm font-semibold">
+              Moderate Distance
+            </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Daily Auction Active</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1 font-bold truncate">
+            Pune APMC Yard (Gultekdi)
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-outline">near_me</span>
+<span>78 km away • approx 2.0 hrs via Pune-Nashik Highway</span>
+</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined text-[22px]">storefront</span>
+</div>
+</div>
+<!-- Price & Trend Section -->
+<div class="grid grid-cols-3 gap-2 bg-surface-container-low p-2.5 rounded-xl text-center">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Min</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">₹2,200</span>
+</div>
+<div class="flex flex-col bg-surface-container-lowest py-1 rounded-lg shadow-xs">
+<span class="font-label-sm text-label-sm text-secondary font-bold">Modal Rate</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-extrabold">₹2,450</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Max</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">₹2,600</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-body-sm">
+<span class="text-on-surface-variant font-body-sm text-body-sm">8,100 Quintals arrival (Regular flow)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-bold bg-surface-container px-2 py-0.5 rounded">Stable (±₹0)</span>
+</div>
+<!-- Outline / Secondary CTA -->
+<button class="w-full h-14 rounded-xl bg-surface-container-low text-primary-container hover:bg-surface-container font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 active:scale-[0.99] transition-all">
+<span>Calculate Net Cash Payout</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+<!-- MANDI CARD 3: Local Junnar APMC (Local Benchmark) -->
+<div class="w-full bg-surface-container-lowest rounded-2xl p-4 shadow-sm flex flex-col gap-3 relative">
+<div class="flex items-start justify-between gap-2">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-semibold">
+              Local Hub
+            </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Zero Transit Friction</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mt-1 font-bold truncate">
+            Local Junnar APMC Sub-Yard
+          </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-outline">near_me</span>
+<span>6 km away • approx 15 mins via Otur Road</span>
+</p>
+</div>
+<div class="w-10 h-10 rounded-xl bg-surface-container-low flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined text-[22px]">location_city</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-xl bg-surface-container-low">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Local Modal Price</span>
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold">₹2,100 / Q</span>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Daily Volume</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">2,400 Quintals</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        Minimal transport cost, but lower volume of wholesale bulk institutional buyers today.
+      </p>
+<button class="w-full h-14 rounded-xl bg-surface-container-low text-primary-container hover:bg-surface-container font-label-lg text-label-lg font-bold flex items-center justify-center gap-2 active:scale-[0.99] transition-all">
+<span>Calculate Net Cash Payout</span>
+<span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Bottom Visual Delight: Live Arhtiya Trade Activity Feed -->
+<div class="w-full p-4 rounded-2xl bg-surface-container-lowest shadow-sm flex items-center justify-between gap-3">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-bold text-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Live Auction Call in Vashi</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Lot #841 (Export Grade) settled at ₹3,120/Q</span>
+</div>
+</div>
+<span class="font-label-sm text-[11px] font-bold text-secondary shrink-0">4m ago</span>
+</div>
+</div>
+<script>
+  // Simple toggle micro-interactions for filters
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      if (this.innerText.includes("Calculate Net Cash Payout")) {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> Calculating Payout...';
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 1200);
+      }
+    });
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="text-primary font-bold"><div class="grid grid-cols-4 items-center h-20 px-space-xs"><a class="flex flex-col items-center justify-center h-full min-h-[56px] gap-1 text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="home" href="#"><span class="material-symbols-outlined text-[24px]">home</span><span class="font-label-sm text-label-sm">Home</span></a><a aria-current="page" class="flex flex-col items-center justify-center h-full min-h-[56px] gap-1 active:scale-95 transition-all relative text-primary font-bold" data-path="live-mandi-rates" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[24px]">storefront</span><span class="absolute -top-1 -right-2 px-1.5 py-0.2 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold tracking-tight shadow-xs">LIVE</span></div><span class="font-label-sm text-label-sm">Markets</span></a><a class="flex flex-col items-center justify-center h-full min-h-[56px] gap-1 text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="my-lots" href="#"><span class="material-symbols-outlined text-[24px]">inventory_2</span><span class="font-label-sm text-label-sm">My Lots</span></a><a class="flex flex-col items-center justify-center h-full min-h-[56px] gap-1 text-on-surface-variant hover:text-on-surface active:scale-95 transition-all" data-path="profile" href="#"><span class="material-symbols-outlined text-[24px]">account_circle</span><span class="font-label-sm text-label-sm">Profile</span></a></div></nav></body></html>

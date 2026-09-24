@@ -1,0 +1,66 @@
+# Environment files
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+# Python build and virtualenvs
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.venv/
+venv/
+ENV/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Large archive files
+*.zip
+*.tar.gz
+*.rar
+
+# Flutter / Dart
+**/android/local.properties
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+**/build/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/ios/Flutter/.last_build_id
+.widget_preview/
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+Thumbs.db
