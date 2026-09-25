@@ -37,7 +37,6 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final optionsAsync = ref.watch(logisticsOptionsProvider);
 
     return Scaffold(

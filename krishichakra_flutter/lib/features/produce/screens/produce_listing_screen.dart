@@ -1,6 +1,5 @@
 import '../../../l10n/app_localizations.dart';
 import 'dart:convert';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -29,7 +28,23 @@ class ProduceListingScreen extends ConsumerStatefulWidget {
 
 class _ProduceListingScreenState
     extends ConsumerState<ProduceListingScreen> {
-  // â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  static String _formatAmount(double amount) {
+    final intVal = amount.round();
+    final s = intVal.toString();
+    if (s.length <= 3) return s;
+    final last3 = s.substring(s.length - 3);
+    final remaining = s.substring(0, s.length - 3);
+    final formatted = remaining.replaceAllMapped(
+      RegExp(r'(\d)(?=(\d{2})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
+    return '$formatted,$last3';
+  }
+
+  // ── Step management ────────────────────────────────────────────────────────
+  int _currentStep = 0; // 0: Photo & Harvest, 1: Location & FPO, 2: Price Lock
+
+  // ── Form state (Step 1) ────────────────────────────────────────────────────
   String _commodity = 'Onion';
   String _variety = 'Nasik Red';
   double _quantity = 20.0;
@@ -38,16 +53,25 @@ class _ProduceListingScreenState
   bool _isSubmitting = false;
   String? _errorMessage;
 
-  // â”€â”€ Camera / image state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Camera / image state ───────────────────────────────────────────────────
   XFile? _imageFile;
   String? _imageBase64;
   bool _isGrading = false;
   ProduceGradeResult? _gradeResult;
 
-  // â”€â”€ Additional options state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // ── Location & FPO state (Step 2) ──────────────────────────────────────────
+  String _state = 'Maharashtra';
+  String _district = 'Pune';
+  String _market = 'Junnar';
+  String _village = 'Otur';
+  String _fpoName = 'Sahyadri Farmers Producer Co.';
+  bool _enableFpoPool = false;
+  bool _transportAssistance = true;
+
+  // ── Price Lock state (Step 3) ──────────────────────────────────────────────
   double _basePricePerQ = 2200.0;
   bool _enableQrTraceability = true;
-  bool _enableFpoPool = false;
+  bool _priceLockConfirmed = false;
 
   final ImagePicker _picker = ImagePicker();
 
@@ -114,7 +138,44 @@ class _ProduceListingScreenState
     }
   }
 
-  // â”€â”€ Submit lot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    void _handleVoiceMicTap() {
+    setState(() {
+      _isListening = true;
+      _commodity = 'Onion';
+      _variety = 'Nasik Red';
+      _quantity = 20.0;
+      _grade = 'A';
+      _state = 'Maharashtra';
+      _district = 'Pune';
+      _market = 'Junnar';
+      _basePricePerQ = 2200.0;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: const [
+            Icon(Icons.mic, color: Colors.white, size: 18),
+            SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                'Voice Recognized: "20 quintals Red Onion Grade A, Junnar"',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: AppColors.primary,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (mounted) setState(() => _isListening = false);
+    });
+  }
+
+  // ── Submit lot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _submitLot() async {
     if (_commodity.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -162,7 +223,19 @@ class _ProduceListingScreenState
         ),
       );
 
-      context.push('${AppRoutes.buyerMatches}?lot_id=${newLot.id}');
+      final uri = Uri(
+        path: AppRoutes.buyerMatches,
+        queryParameters: {
+          'lot_id': newLot.id.toString(),
+          'commodity': _commodity.trim(),
+          'variety': _variety.trim(),
+          'quantity': _quantity.toString(),
+          'grade': _grade,
+          'market': _market,
+          'expected_price': _basePricePerQ.round().toString(),
+        },
+      );
+      context.push(uri.toString());
     } on ApiException catch (e) {
       if (!mounted) return;
       setState(() => _errorMessage = e.message);
@@ -175,6 +248,78 @@ class _ProduceListingScreenState
   }
 
   // â”€â”€ Quantity stepper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  void _goToStep2() {
+    if (_commodity.trim().isEmpty) {
+      setState(() => _errorMessage = 'Please select or enter a crop/commodity.');
+      return;
+    }
+    if (_quantity <= 0) {
+      setState(() => _errorMessage = 'Please specify a positive harvest quantity.');
+      return;
+    }
+    setState(() {
+      _errorMessage = null;
+      _currentStep = 1;
+    });
+  }
+
+  void _goToStep3() {
+    setState(() {
+      _errorMessage = null;
+      _currentStep = 2;
+    });
+  }
+
+  void _confirmPriceLock() {
+    setState(() => _priceLockConfirmed = true);
+    showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: const [
+            Icon(Icons.verified_user, color: AppColors.secondary, size: 24),
+            SizedBox(width: 8),
+            Text('Price Lock Confirmed', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Commodity: $_commodity ($_variety)', style: const TextStyle(fontWeight: FontWeight.w600)),
+            const SizedBox(height: 4),
+            Text('Quantity: ${_quantity.round()} Q (${_crateCount} Crates)'),
+            const SizedBox(height: 4),
+            Text('Market: $_market Mandi, $_district'),
+            const SizedBox(height: 4),
+            Text('Locked Benchmark: ₹${_basePricePerQ.round()}/Q', style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 4),
+            Text('Estimated Gross: ₹${_formatAmount(_estimatedGrossValue)}', style: const TextStyle(color: AppColors.secondary, fontWeight: FontWeight.w700)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryContainer.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Text(
+                '✓ KrishiChakra Smart Escrow & Dispute Shield activated for this deal.',
+                style: TextStyle(fontSize: 11, color: AppColors.secondary, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK', style: TextStyle(fontWeight: FontWeight.w700)),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _incrementQty() =>
       setState(() => _quantity = (_quantity + 5).clamp(1, 500));
   void _decrementQty() =>
@@ -195,8 +340,23 @@ class _ProduceListingScreenState
             backgroundColor: Colors.transparent,
             flexibleSpace: KcAppBar(
               title: 'List Your Harvest',
-              subtitle: 'Step 1 of 3 — Photo & Harvest Details',
+              subtitle: _currentStep == 0
+                  ? 'Step 1 of 3 — Photo & Harvest Details'
+                  : _currentStep == 1
+                      ? 'Step 2 of 3 — Location & FPO'
+                      : 'Step 3 of 3 — Price Lock',
               showBack: true,
+              onBack: () {
+                if (_currentStep > 0) {
+                  setState(() => _currentStep--);
+                } else {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(AppRoutes.home);
+                  }
+                }
+              },
             ),
             toolbarHeight: AppSpacing.headerHeight,
             surfaceTintColor: Colors.transparent,
@@ -211,122 +371,211 @@ class _ProduceListingScreenState
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 // Step progress bar
-                _StepBar(current: 0),
+                _StepBar(current: _currentStep),
                 const SizedBox(height: AppSpacing.md),
 
-                // â”€â”€ Camera / image upload card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _CameraCard(
-                  imageFile: _imageFile,
-                  imageBase64: _imageBase64,
-                  isGrading: _isGrading,
-                  gradeResult: _gradeResult,
-                  onTapCamera: () => _showImageSourceSheet(context),
-                  onRetake: () => _pickImage(ImageSource.camera),
-                  onChange: () => _showImageSourceSheet(context),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // â”€â”€ Grading result banner (only after grading) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                if (_gradeResult != null) ...[
-                  _GradingResultBanner(result: _gradeResult!),
-                  const SizedBox(height: AppSpacing.md),
-                ],
-
-                // â”€â”€ Voice search bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                VoiceSearchBar(
-                  hint: 'Say: "20 quintals Red Onion Grade A, Junnar"',
-                  isListening: _isListening,
-                  onMicTap: () =>
-                      setState(() => _isListening = !_isListening),
-                ),
-                const SizedBox(height: AppSpacing.md),
-
-                // â”€â”€ Error banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                if (_errorMessage != null) ...[
-                  _ErrorBanner(
-                    message: _errorMessage!,
-                    onDismiss: () => setState(() => _errorMessage = null),
+                // ── STEP 1: Photo & Harvest Details ─────────────────────────
+                if (_currentStep == 0) ...[
+                  _CameraCard(
+                    imageFile: _imageFile,
+                    imageBase64: _imageBase64,
+                    isGrading: _isGrading,
+                    gradeResult: _gradeResult,
+                    onTapCamera: () => _showImageSourceSheet(context),
+                    onRetake: () => _pickImage(ImageSource.camera),
+                    onChange: () => _showImageSourceSheet(context),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                ],
 
-                // â”€â”€ Crop details form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _CropDetailsCard(
-                  commodity: _commodity,
-                  variety: _variety,
-                  quantity: _quantity,
-                  grade: _grade,
-                  onCommodityChanged: (v) => setState(() => _commodity = v),
-                  onVarietyChanged: (v) => setState(() => _variety = v),
-                  onGradeChanged: (v) => setState(() => _grade = v),
-                  onIncrement: _incrementQty,
-                  onDecrement: _decrementQty,
-                  crateCount: _crateCount,
-                ),
-                const SizedBox(height: AppSpacing.md),
+                  if (_gradeResult != null) ...[
+                    _GradingResultBanner(result: _gradeResult!),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
 
-                // â”€â”€ Base price & estimated gross â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _PriceEstimateCard(
-                  basePricePerQ: _basePricePerQ,
-                  quantity: _quantity,
-                  estimatedGross: _estimatedGrossValue,
-                  onPriceChanged: (v) =>
-                      setState(() => _basePricePerQ = v),
-                  fpoBonus: _enableFpoPool,
-                ),
-                const SizedBox(height: AppSpacing.md),
+                  VoiceSearchBar(
+                    hint: 'Say: "20 quintals Red Onion Grade A, Junnar"',
+                    isListening: _isListening,
+                    onMicTap: _handleVoiceMicTap,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
 
-                // â”€â”€ Crate QR traceability card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _QrTraceabilityCard(
-                  enabled: _enableQrTraceability,
-                  crateCount: _crateCount,
-                  onToggle: (v) =>
-                      setState(() => _enableQrTraceability = v),
-                ),
-                const SizedBox(height: AppSpacing.md),
+                  if (_errorMessage != null) ...[
+                    _ErrorBanner(
+                      message: _errorMessage!,
+                      onDismiss: () => setState(() => _errorMessage = null),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
 
-                // â”€â”€ FPO bulk pooling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _FpoPoolCard(
-                  enabled: _enableFpoPool,
-                  onToggle: (v) =>
-                      setState(() => _enableFpoPool = v),
-                ),
-                const SizedBox(height: AppSpacing.lg),
+                  _CropDetailsCard(
+                    commodity: _commodity,
+                    variety: _variety,
+                    quantity: _quantity,
+                    grade: _grade,
+                    onCommodityChanged: (v) => setState(() => _commodity = v),
+                    onVarietyChanged: (v) => setState(() => _variety = v),
+                    onGradeChanged: (v) => setState(() => _grade = v),
+                    onIncrement: _incrementQty,
+                    onDecrement: _decrementQty,
+                    crateCount: _crateCount,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
 
-                if (_errorMessage != null) ...[
-                  Container(
-                    margin: const EdgeInsets.only(bottom: AppSpacing.md),
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.errorContainer.withOpacity(0.35),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.error.withOpacity(0.4)),
+                  ElevatedButton(
+                    onPressed: _goToStep2,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryContainer,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size.fromHeight(52),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      elevation: 0,
                     ),
                     child: Row(
-                      children: [
-                        Icon(Icons.error_outline,
-                            color: AppColors.error, size: 20),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            _errorMessage!,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: AppColors.error,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Text('Continue to Location & FPO', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 18),
                       ],
                     ),
                   ),
                 ],
 
-                // â”€â”€ Publish button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-                _PublishButton(
-                  isSubmitting: _isSubmitting,
-                  onPressed: _submitLot,
-                ),
+                // ── STEP 2: Location & FPO ──────────────────────────────────
+                if (_currentStep == 1) ...[
+                  _LocationFpoStepCard(
+                    state: _state,
+                    district: _district,
+                    market: _market,
+                    village: _village,
+                    fpoName: _fpoName,
+                    transportAssistance: _transportAssistance,
+                    onStateChanged: (v) => setState(() => _state = v),
+                    onDistrictChanged: (v) => setState(() => _district = v),
+                    onMarketChanged: (v) => setState(() => _market = v),
+                    onVillageChanged: (v) => setState(() => _village = v),
+                    onFpoChanged: (v) => setState(() => _fpoName = v),
+                    onTransportChanged: (v) => setState(() => _transportAssistance = v),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  _FpoPoolCard(
+                    enabled: _enableFpoPool,
+                    onToggle: (v) => setState(() => _enableFpoPool = v),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => setState(() => _currentStep = 0),
+                          icon: const Icon(Icons.arrow_back, size: 16),
+                          label: const Text('Back', style: TextStyle(fontWeight: FontWeight.w700)),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton(
+                          onPressed: _goToStep3,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryContainer,
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size.fromHeight(52),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                            elevation: 0,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text('Continue to Price Lock', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                              SizedBox(width: 6),
+                              Icon(Icons.arrow_forward, size: 18),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+
+                // ── STEP 3: Price Lock & Publish ────────────────────────────
+                if (_currentStep == 2) ...[
+                  // Summary review card
+                  _HarvestReviewCard(
+                    commodity: _commodity,
+                    variety: _variety,
+                    quantity: _quantity,
+                    crateCount: _crateCount,
+                    grade: _grade,
+                    state: _state,
+                    district: _district,
+                    market: _market,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  _PriceEstimateCard(
+                    basePricePerQ: _basePricePerQ,
+                    quantity: _quantity,
+                    estimatedGross: _estimatedGrossValue,
+                    onPriceChanged: (v) => setState(() => _basePricePerQ = v),
+                    fpoBonus: _enableFpoPool,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  _QrTraceabilityCard(
+                    enabled: _enableQrTraceability,
+                    crateCount: _crateCount,
+                    onToggle: (v) => setState(() => _enableQrTraceability = v),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  _MandiPriceLockCard(
+                    commodity: _commodity,
+                    market: _market,
+                    basePricePerQ: _basePricePerQ,
+                    isLocked: _priceLockConfirmed,
+                    onLockTap: _confirmPriceLock,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+
+                  if (_errorMessage != null) ...[
+                    _ErrorBanner(
+                      message: _errorMessage!,
+                      onDismiss: () => setState(() => _errorMessage = null),
+                    ),
+                    const SizedBox(height: AppSpacing.md),
+                  ],
+
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => setState(() => _currentStep = 1),
+                          icon: const Icon(Icons.arrow_back, size: 16),
+                          label: const Text('Back', style: TextStyle(fontWeight: FontWeight.w700)),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.md),
+                      Expanded(
+                        flex: 2,
+                        child: _PublishButton(
+                          isSubmitting: _isSubmitting,
+                          onPressed: _submitLot,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.xl),
               ]),
             ),
@@ -482,12 +731,15 @@ class _CameraCard extends StatelessWidget {
           // Background: image preview or placeholder
           if (hasImage)
             Positioned.fill(
-              child: Image.memory(
-                base64Decode(imageBase64!),
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _CameraPlaceholder(
-                  isGrading: isGrading,
-                  onTap: onTapCamera,
+              child: Container(
+                color: Colors.black.withOpacity(0.06),
+                child: Image.memory(
+                  base64Decode(imageBase64!),
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => _CameraPlaceholder(
+                    isGrading: isGrading,
+                    onTap: onTapCamera,
+                  ),
                 ),
               ),
             )
@@ -1298,7 +1550,7 @@ class _PriceEstimateCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '₹${basePricePerQ.round()}/Q Ã— ${quantity.round()} Q',
+                '₹${basePricePerQ.round()}/Q × ${quantity.round()} Q',
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.onSurfaceVariant,
@@ -1381,7 +1633,7 @@ class _QrTraceabilityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final previewCrates = ['#C-01', '#C-02', '#C-03', 'â€¦#C-${crateCount.toString().padLeft(2, "0")}'];
+    final previewCrates = ['#C-01', '#C-02', '#C-03', '…#C-${crateCount.toString().padLeft(2, "0")}'];
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1410,7 +1662,7 @@ class _QrTraceabilityCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Serialized Crate QR Codes Â· Dispute Shield',
+                      'Serialized Crate QR Codes · Dispute Shield',
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.onSurfaceVariant,
@@ -1598,7 +1850,7 @@ class _PublishButton extends StatelessWidget {
             : Icon(Icons.people_alt_outlined, size: 20),
         label: Text(
           isSubmitting
-              ? 'Publishing Lot on Serverâ€¦'
+              ? 'Publishing Lot on Server…'
               : 'Publish Lot & Receive Buyer Bids',
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
@@ -1636,6 +1888,435 @@ class _FieldLabel extends StatelessWidget {
           color: AppColors.onSurfaceVariant,
           letterSpacing: 0.3,
         ),
+      ),
+    );
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 2: Location & FPO Card
+// ─────────────────────────────────────────────────────────────────────────────
+class _LocationFpoStepCard extends StatelessWidget {
+  const _LocationFpoStepCard({
+    required this.state,
+    required this.district,
+    required this.market,
+    required this.village,
+    required this.fpoName,
+    required this.transportAssistance,
+    required this.onStateChanged,
+    required this.onDistrictChanged,
+    required this.onMarketChanged,
+    required this.onVillageChanged,
+    required this.onFpoChanged,
+    required this.onTransportChanged,
+  });
+
+  final String state;
+  final String district;
+  final String market;
+  final String village;
+  final String fpoName;
+  final bool transportAssistance;
+  final ValueChanged<String> onStateChanged;
+  final ValueChanged<String> onDistrictChanged;
+  final ValueChanged<String> onMarketChanged;
+  final ValueChanged<String> onVillageChanged;
+  final ValueChanged<String> onFpoChanged;
+  final ValueChanged<bool> onTransportChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final states = ['Maharashtra', 'Madhya Pradesh', 'Gujarat', 'Karnataka'];
+    final districts = ['Nashik', 'Pune', 'Ahmednagar', 'Solapur', 'Kolhapur', 'Nagpur', 'Aurangabad'];
+    final mandis = [
+      'Lasalgaon APMC',
+      'Pimpalgaon APMC',
+      'Junnar APMC',
+      'Pune APMC',
+      'Vashi APMC (Mumbai)',
+      'Nashik APMC',
+      'Ahmednagar APMC',
+    ];
+    final fpos = [
+      'Sahyadri Farmer Producer Co. Ltd.',
+      'Junnar Krishi Vikas FPO',
+      'MahaFPC District Consortium',
+      'Nashik Onion & Agri Producers Co.',
+    ];
+
+    final effectiveState = states.contains(state) ? state : states.first;
+    final effectiveDistrict = districts.contains(district) ? district : districts.first;
+    final effectiveMarket = mandis.contains(market) ? market : mandis.first;
+    final effectiveFpo = fpos.contains(fpoName) ? fpoName : fpos.first;
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.location_on_outlined, color: AppColors.primaryContainer, size: 20),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Farmgate Location & APMC Linkage', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                    Text('Origin farm, target mandi and aggregation hub', style: TextStyle(fontSize: 11, color: AppColors.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.md),
+
+          // State and District
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _FieldLabel('State'),
+                    DropdownButtonFormField<String>(
+                      value: effectiveState,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      items: states.map((s) => DropdownMenuItem(value: s, child: Text(s, style: const TextStyle(fontSize: 13)))).toList(),
+                      onChanged: (v) { if (v != null) onStateChanged(v); },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _FieldLabel('District'),
+                    DropdownButtonFormField<String>(
+                      value: effectiveDistrict,
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      items: districts.map((d) => DropdownMenuItem(value: d, child: Text(d, style: const TextStyle(fontSize: 13)))).toList(),
+                      onChanged: (v) { if (v != null) onDistrictChanged(v); },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Target Mandi
+          const _FieldLabel('Target Mandi / APMC Yard'),
+          DropdownButtonFormField<String>(
+            value: effectiveMarket,
+            isExpanded: true,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            items: mandis.map((m) => DropdownMenuItem(value: m, child: Text(m, style: const TextStyle(fontSize: 13)))).toList(),
+            onChanged: (v) { if (v != null) onMarketChanged(v); },
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Village / Farm address
+          const _FieldLabel('Village / Farmgate Landmark'),
+          TextFormField(
+            initialValue: village,
+            decoration: InputDecoration(
+              hintText: 'e.g., Junnar, Taluka Junnar',
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            onChanged: onVillageChanged,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // FPO Consortium
+          const _FieldLabel('Affiliated FPO Consortium'),
+          DropdownButtonFormField<String>(
+            value: effectiveFpo,
+            isExpanded: true,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            items: fpos.map((f) => DropdownMenuItem(value: f, child: Text(f, style: const TextStyle(fontSize: 13)))).toList(),
+            onChanged: (v) { if (v != null) onFpoChanged(v); },
+          ),
+          const SizedBox(height: AppSpacing.sm),
+
+          // Transport Assistance switch
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: AppColors.outlineVariant),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.local_shipping_outlined, color: AppColors.primary, size: 20),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Request Farmgate Logistics Pickup', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                      Text('Connect with verified transporters nearby', style: TextStyle(fontSize: 11, color: AppColors.onSurfaceVariant)),
+                    ],
+                  ),
+                ),
+                Switch(
+                  value: transportAssistance,
+                  onChanged: onTransportChanged,
+                  activeThumbColor: AppColors.primary,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 3: Harvest Review Card
+// ─────────────────────────────────────────────────────────────────────────────
+class _HarvestReviewCard extends StatelessWidget {
+  const _HarvestReviewCard({
+    required this.commodity,
+    required this.variety,
+    required this.quantity,
+    required this.crateCount,
+    required this.grade,
+    required this.state,
+    required this.district,
+    required this.market,
+  });
+
+  final String commodity;
+  final String variety;
+  final double quantity;
+  final int crateCount;
+  final String grade;
+  final String state;
+  final String district;
+  final String market;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryContainer.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.fact_check_outlined, color: AppColors.primaryContainer, size: 20),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Lot Review & Verification', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                    Text('Summary of details configured in Steps 1 & 2', style: TextStyle(fontSize: 11, color: AppColors.onSurfaceVariant)),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text('Grade $grade', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              ),
+            ],
+          ),
+          const Divider(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _reviewItem('Crop & Variety', '$commodity ($variety)'),
+              _reviewItem('Quantity', '${quantity.toStringAsFixed(0)} Q ($crateCount Crates)'),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _reviewItem('Origin', '$district, $state'),
+              _reviewItem('Target Mandi', market),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _reviewItem(String label, String value) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 11, color: AppColors.onSurfaceVariant)),
+          const SizedBox(height: 2),
+          Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.onSurface)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step 3: APMC Mandi Price Lock Card
+// ─────────────────────────────────────────────────────────────────────────────
+class _MandiPriceLockCard extends StatelessWidget {
+  const _MandiPriceLockCard({
+    required this.commodity,
+    required this.market,
+    required this.basePricePerQ,
+    required this.isLocked,
+    required this.onLockTap,
+  });
+
+  final String commodity;
+  final String market;
+  final double basePricePerQ;
+  final bool isLocked;
+  final VoidCallback onLockTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: isLocked ? AppColors.primary.withValues(alpha: 0.06) : AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: isLocked ? AppColors.primary : AppColors.outlineVariant,
+          width: isLocked ? 1.5 : 1.0,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                isLocked ? Icons.lock : Icons.lock_open,
+                color: isLocked ? AppColors.primary : AppColors.onSurfaceVariant,
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          isLocked ? 'Price Lock Active' : 'APMC Mandi Price Lock Guarantee',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: isLocked ? AppColors.primary : AppColors.onSurface,
+                          ),
+                        ),
+                        if (isLocked) ...[
+                          const SizedBox(width: 6),
+                          const Icon(Icons.verified, size: 16, color: AppColors.primary),
+                        ],
+                      ],
+                    ),
+                    Text(
+                      isLocked
+                          ? 'Floor price ₹${basePricePerQ.toStringAsFixed(0)}/Q guaranteed against market drops'
+                          : 'Benchmarked with $market real-time rates',
+                      style: const TextStyle(fontSize: 11, color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.amber.shade50,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.amber.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.shield_outlined, size: 16, color: Colors.amber.shade800),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Smart Contract Floor: Bids below ₹${basePricePerQ.toStringAsFixed(0)}/Q will be automatically rejected by KrishiChakra contract.',
+                    style: TextStyle(fontSize: 11, color: Colors.amber.shade900, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: onLockTap,
+              icon: Icon(isLocked ? Icons.check_circle : Icons.lock_outline, size: 16),
+              label: Text(
+                isLocked ? 'Price Lock Verified (Tap to edit)' : 'Confirm & Lock Floor Price',
+                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: isLocked ? AppColors.primary : AppColors.primaryContainer,
+                side: BorderSide(color: isLocked ? AppColors.primary : AppColors.primaryContainer),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

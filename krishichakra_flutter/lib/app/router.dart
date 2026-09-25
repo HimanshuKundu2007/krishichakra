@@ -128,6 +128,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.buyerMatches,
         builder: (ctx, state) => BuyerMatchesScreen(
           lotId: int.tryParse(state.uri.queryParameters['lot_id'] ?? ''),
+          commodity: state.uri.queryParameters['commodity'],
+          variety: state.uri.queryParameters['variety'],
+          quantity: double.tryParse(state.uri.queryParameters['quantity'] ?? ''),
+          grade: state.uri.queryParameters['grade'],
+          market: state.uri.queryParameters['market'],
+          expectedPrice: double.tryParse(state.uri.queryParameters['expected_price'] ?? ''),
         ),
       ),
       GoRoute(

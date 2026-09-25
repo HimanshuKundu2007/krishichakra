@@ -55,14 +55,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get coldStorageSubtitle =>
-      'e-NWR â€¢ MSWC â€¢ Book Storage & Apply for Loan';
+      'e-NWR • MSWC • Book Storage & Apply for Loan';
 
   @override
   String get discountedTransport => 'Discounted Return-Truck Transport';
 
   @override
   String get discountedTransportSubtitle =>
-      '35% freight discount â€¢ Book Logistics';
+      '35% freight discount • Book Logistics';
 
   @override
   String get verifiedFarmer => 'VERIFIED FARMER';
@@ -72,7 +72,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get govAgriStackReady =>
-      'Government Agri Stack Ready â€¢ e-NAM & MSWC Integrated';
+      'Government Agri Stack Ready • e-NAM & MSWC Integrated';
 
   @override
   String get mandiLinkSubtitle => '5G MandiLink';

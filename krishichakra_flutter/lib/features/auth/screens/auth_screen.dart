@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../../l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -7,11 +7,12 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 
 import '../../../shared/widgets/krishichakra_logo.dart';
+import '../../../shared/widgets/role_icon.dart';
 import '../../../core/providers/language_provider.dart';
 
-/// Screen 1 Ã¢â‚¬â€ Authentication
+/// Screen 1 — Authentication
 /// Faithfully reproduces the Stitch KrishiChakra auth screen:
-///  - Language switcher (EN / Ã Â¤Â¹Ã Â¤Â¿Ã Â¤Â¨Ã Â¥ÂÃ Â¤Â¦Ã Â¥â‚¬ / Ã Â¤Â®Ã Â¤Â°Ã Â¤Â¾Ã Â¤Â Ã Â¥â‚¬)
+///  - Language switcher (EN / हिन्दी / मराठी)
 ///  - Phone + OTP input
 ///  - Role picker (Farmer/FPO | Buyer/Trader | Transporter)
 ///  - Trust badges
@@ -19,9 +20,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/repositories/health_repository.dart';
 import '../../../core/repositories/farmer_repository.dart';
 
-/// Screen 1 Ã¢â‚¬â€ Authentication
+/// Screen 1 — Authentication
 /// Faithfully reproduces the Stitch KrishiChakra auth screen:
-///  - Language switcher (EN / Ã Â¤Â¹Ã Â¤Â¿Ã Â¤Â¨Ã Â¥ÂÃ Â¤Â¦Ã Â¥â‚¬ / Ã Â¤Â®Ã Â¤Â°Ã Â¤Â¾Ã Â¤Â Ã Â¥â‚¬)
+///  - Language switcher (EN / हिन्दी / मराठी)
 ///  - Phone + OTP input
 ///  - Role picker (Farmer/FPO | Buyer/Trader | Transporter)
 ///  - Trust badges
@@ -33,7 +34,7 @@ class AuthScreen extends ConsumerStatefulWidget {
 }
 
 class _AuthScreenState extends ConsumerState<AuthScreen> {
-  // Ã¢â€â‚¬Ã¢â€â‚¬ State Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── State ──────────────────────────────────────────────────────────────────
   // Global language managed by languageProvider
   String _role = 'farmer';
   String _phone = '';
@@ -46,7 +47,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   final _focusNodes = List.generate(4, (_) => FocusNode());
   final _otpControllers = List.generate(4, (_) => TextEditingController());
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Helpers Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── Helpers ────────────────────────────────────────────────────────────────
   bool get _phoneValid => _phone.length == 10;
 
   void _sendOtp() {
@@ -108,7 +109,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     super.dispose();
   }
 
-  // Ã¢â€â‚¬Ã¢â€â‚¬ Build Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+  // ── Build ──────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -191,7 +192,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 }
 
-// Ã¢â€â‚¬Ã¢â€â‚¬ Sub-widgets Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+// ── Sub-widgets ───────────────────────────────────────────────────────────────
 
 class _Header extends ConsumerWidget {
   @override
@@ -485,7 +486,7 @@ class _MicTouchTarget extends StatelessWidget {
               size: 22,
             ),
             Text(
-              'Ã Â¤Â¬Ã Â¥â€¹Ã Â¤Â²Ã Â¤Â¿Ã Â¤Â',
+              'बोलि',
               style: TextStyle(
                 fontSize: 9,
                 color: AppColors.onSurfaceVariant,
@@ -604,7 +605,7 @@ class _RolePicker extends StatelessWidget {
     ),
     (
       'buyer',
-      'Ã°Å¸ÂÂ¢',
+      '🏢',
       'Institutional Buyer / Trader',
       'Pan-India Delivery • Assured Grades'
     ),
@@ -633,6 +634,7 @@ class _RolePicker extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xs),
         ..._roles.map((r) => _RoleCard(
+              role: r.$1,
               emoji: r.$2,
               title: r.$3,
               subtitle: r.$4,
@@ -646,6 +648,7 @@ class _RolePicker extends StatelessWidget {
 
 class _RoleCard extends StatelessWidget {
   const _RoleCard({
+    required this.role,
     required this.emoji,
     required this.title,
     required this.subtitle,
@@ -653,6 +656,7 @@ class _RoleCard extends StatelessWidget {
     required this.onTap,
   });
 
+  final String role;
   final String emoji;
   final String title;
   final String subtitle;
@@ -671,7 +675,7 @@ class _RoleCard extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 72),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppColors.primaryContainer.withOpacity(0.1)
+              ? AppColors.primaryContainer.withValues(alpha: 0.1)
               : AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
@@ -696,12 +700,12 @@ class _RoleCard extends StatelessWidget {
                 color: isSelected ? AppColors.primary : Colors.transparent,
               ),
               child: isSelected
-                  ? Icon(Icons.check, size: 12, color: Colors.white)
+                  ? const Icon(Icons.check, size: 12, color: Colors.white)
                   : null,
             ),
             const SizedBox(width: AppSpacing.md),
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(width: AppSpacing.sm),
+            RoleIcon(role: role, size: 24, isSelected: isSelected),
+            const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

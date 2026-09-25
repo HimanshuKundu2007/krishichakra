@@ -193,7 +193,7 @@ abstract class AppLocalizations {
   /// No description provided for @coldStorageSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'e-NWR â€¢ MSWC â€¢ Book Storage & Apply for Loan'**
+  /// **'e-NWR • MSWC • Book Storage & Apply for Loan'**
   String get coldStorageSubtitle;
 
   /// No description provided for @discountedTransport.
@@ -205,7 +205,7 @@ abstract class AppLocalizations {
   /// No description provided for @discountedTransportSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'35% freight discount â€¢ Book Logistics'**
+  /// **'35% freight discount • Book Logistics'**
   String get discountedTransportSubtitle;
 
   /// No description provided for @verifiedFarmer.
@@ -223,7 +223,7 @@ abstract class AppLocalizations {
   /// No description provided for @govAgriStackReady.
   ///
   /// In en, this message translates to:
-  /// **'Government Agri Stack Ready â€¢ e-NAM & MSWC Integrated'**
+  /// **'Government Agri Stack Ready • e-NAM & MSWC Integrated'**
   String get govAgriStackReady;
 
   /// No description provided for @mandiLinkSubtitle.

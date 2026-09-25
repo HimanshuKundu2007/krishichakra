@@ -9,16 +9,33 @@ import '../../../core/repositories/transaction_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/kc_app_bar.dart';
+import '../../../app/router.dart';
 import '../../../shared/widgets/kc_widgets.dart';
 
-// â”€â”€â”€ Screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Screen â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Buyer Bids & Matches screen.
 /// Connects to GET /api/buyers/matches/{lot_id} — real backend data only.
 /// No hardcoded or fake buyers are shown.
 class BuyerMatchesScreen extends ConsumerStatefulWidget {
-  const BuyerMatchesScreen({super.key, this.lotId});
+  const BuyerMatchesScreen({
+    super.key,
+    this.lotId,
+    this.commodity,
+    this.variety,
+    this.quantity,
+    this.grade,
+    this.market,
+    this.expectedPrice,
+  });
+
   final int? lotId;
+  final String? commodity;
+  final String? variety;
+  final double? quantity;
+  final String? grade;
+  final String? market;
+  final double? expectedPrice;
 
   @override
   ConsumerState<BuyerMatchesScreen> createState() => _BuyerMatchesScreenState();
@@ -34,6 +51,21 @@ class _BuyerMatchesScreenState extends ConsumerState<BuyerMatchesScreen> {
   void initState() {
     super.initState();
     _browseMode = widget.lotId == null;
+    if (widget.commodity != null && widget.commodity!.isNotEmpty) {
+      final c = widget.commodity!;
+      if (c.toLowerCase().contains('onion')) {
+        _selectedCommodity = 'Onion';
+      } else if (c.toLowerCase().contains('tomato')) {
+        _selectedCommodity = 'Tomato';
+      } else if (c.toLowerCase().contains('potato')) {
+        _selectedCommodity = 'Potato';
+      } else {
+        _selectedCommodity = c;
+      }
+    }
+    if (widget.grade != null && widget.grade!.isNotEmpty) {
+      _selectedGrade = widget.grade!;
+    }
   }
 
   Map<String, dynamic> get _filters {
@@ -76,6 +108,13 @@ class _BuyerMatchesScreenState extends ConsumerState<BuyerMatchesScreen> {
                     : 'Demo Buyer Database (Maharashtra)',
                 showBack: true,
                 showLiveIndicator: true,
+                onBack: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go(AppRoutes.home);
+                  }
+                },
                 actions: [
                   if (effectiveLotId != null)
                     TextButton.icon(
@@ -110,6 +149,28 @@ class _BuyerMatchesScreenState extends ConsumerState<BuyerMatchesScreen> {
               toolbarHeight: AppSpacing.headerHeight,
               surfaceTintColor: Colors.transparent,
             ),
+            if (widget.lotId != null || widget.commodity != null) ...[
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.sm, AppSpacing.md, AppSpacing.xs),
+                  child: _StepCompletionBanner(),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.md, 0, AppSpacing.md, AppSpacing.sm),
+                  child: _PublishedLotSummaryBanner(
+                    lotId: effectiveLotId,
+                    commodity: widget.commodity,
+                    variety: widget.variety,
+                    quantity: widget.quantity,
+                    grade: widget.grade,
+                    market: widget.market,
+                    expectedPrice: widget.expectedPrice,
+                  ),
+                ),
+              ),
+            ],
             if (!_browseMode && effectiveLotId != null)
               _MatchesList(
                 lotId: effectiveLotId,
@@ -132,7 +193,7 @@ class _BuyerMatchesScreenState extends ConsumerState<BuyerMatchesScreen> {
   }
 }
 
-// â”€â”€â”€ Matches list (async) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Matches list (async) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _MatchesList extends ConsumerWidget {
   const _MatchesList({
@@ -169,54 +230,21 @@ class _MatchesList extends ConsumerWidget {
           ),
         );
       },
-      data: (matches) => matches.isEmpty
-          ? SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.people_outline,
-                        size: 48, color: AppColors.primary),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'No Exact Matched Buyers Found',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.onSurface,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    const Text(
-                      'No buyer currently matches this specific commodity and grade criteria. You can browse all verified demo buyers across Maharashtra.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.onSurfaceVariant,
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: onBrowseAll,
-                      icon: const Icon(Icons.storefront_outlined, size: 16),
-                      label: const Text('View All Demo Buyers'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryContainer,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 20, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : _MatchesContent(lotId: lotId, matches: matches),
+      data: (matches) {
+        if (matches.isEmpty) {
+          return _AllBuyersBrowseView(
+            selectedCommodity: 'All',
+            selectedLocation: 'All',
+            selectedGrade: 'All',
+            onCommodityChanged: (_) {},
+            onLocationChanged: (_) {},
+            onGradeChanged: (_) {},
+            lotId: lotId,
+            emptyNotice: 'No exact algorithmic match for this lot filter. Displaying verified Maharashtra demo buyers available for immediate bidding:',
+          );
+        }
+        return _MatchesContent(lotId: lotId, matches: matches);
+      },
     );
   }
 }
@@ -265,7 +293,7 @@ class _MatchesContent extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Transparency notice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Transparency notice â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _TransparencyNotice extends StatelessWidget {
   const _TransparencyNotice({required this.matchCount});
@@ -302,7 +330,7 @@ class _TransparencyNotice extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Buyer match card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Buyer match card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _BuyerMatchCard extends StatelessWidget {
   const _BuyerMatchCard({
@@ -348,7 +376,7 @@ class _BuyerMatchCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // â”€â”€ Header row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ─── Header row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
             child: Row(
@@ -595,19 +623,19 @@ class _BuyerMatchCard extends StatelessWidget {
             ),
           ),
 
-          // â”€â”€ Match score bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ─── Match score bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 14, 14, 0),
             child: _MatchScoreBar(score: match.matchScore),
           ),
 
-          // â”€â”€ Score breakdown pills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ─── Score breakdown pills â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 10, 14, 0),
             child: _ScoreBreakdownRow(breakdown: match.scoreBreakdown),
           ),
 
-          // â”€â”€ Match reason â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          // ─── Match reason â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
             child: Row(
@@ -650,7 +678,7 @@ class _BuyerMatchCard extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Match score bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Match score bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _MatchScoreBar extends StatelessWidget {
   const _MatchScoreBar({required this.score});
@@ -714,7 +742,7 @@ class _MatchScoreBar extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Score breakdown row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Score breakdown row â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _ScoreBreakdownRow extends StatelessWidget {
   const _ScoreBreakdownRow({required this.breakdown});
@@ -761,7 +789,7 @@ class _BreakdownPill extends StatelessWidget {
   });
 
   final String label;
-  final double value; // 0â€“100
+  final double value; // 0–100
   final String weight;
 
   Color get _color {
@@ -809,7 +837,7 @@ class _BreakdownPill extends StatelessWidget {
   }
 }
 
-// â”€â”€â”€ Offer confirm bottom sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── Offer confirm bottom sheet â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _OfferConfirmSheet extends ConsumerStatefulWidget {
   const _OfferConfirmSheet({required this.match, required this.lotId});
@@ -1043,7 +1071,7 @@ class _OfferConfirmSheetState extends ConsumerState<_OfferConfirmSheet> {
                       )
                     : Icon(Icons.lock_outline, size: 18),
                 label: Text(
-                  submitting ? 'Lockingâ€¦' : 'Confirm & Lock in Escrow',
+                  submitting ? 'Locking…' : 'Confirm & Lock in Escrow',
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 style: ElevatedButton.styleFrom(
@@ -1126,6 +1154,7 @@ class _AllBuyersBrowseView extends ConsumerWidget {
     required this.onLocationChanged,
     required this.onGradeChanged,
     this.lotId,
+    this.emptyNotice,
   });
 
   final String selectedCommodity;
@@ -1135,6 +1164,7 @@ class _AllBuyersBrowseView extends ConsumerWidget {
   final ValueChanged<String> onLocationChanged;
   final ValueChanged<String> onGradeChanged;
   final int? lotId;
+  final String? emptyNotice;
 
   static const commodities = [
     'All',
@@ -1186,6 +1216,33 @@ class _AllBuyersBrowseView extends ConsumerWidget {
       ),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
+          if (emptyNotice != null) ...[
+            Container(
+              padding: const EdgeInsets.all(AppSpacing.md),
+              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.shade300),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.amber.shade900, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      emptyNotice!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.amber.shade900,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           // Prototype demo database disclaimer
           Container(
             padding: const EdgeInsets.all(AppSpacing.sm),
@@ -1650,6 +1707,216 @@ class _BuyerDetailSheet extends StatelessWidget {
         children: [
           Text(label, style: const TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant)),
           Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+}
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Step Completion Banner
+// ─────────────────────────────────────────────────────────────────────────────
+class _StepCompletionBanner extends StatelessWidget {
+  const _StepCompletionBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: AppColors.primaryContainer.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: const BoxDecoration(
+                  color: AppColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check, size: 14, color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  '3/3 Steps Complete • Harvest Published Live',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Text(
+                  'LIVE',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _stepItem('Step 1', 'Photo & Crop', true),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 14, color: AppColors.primary),
+              const SizedBox(width: 4),
+              _stepItem('Step 2', 'Location & FPO', true),
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right, size: 14, color: AppColors.primary),
+              const SizedBox(width: 4),
+              _stepItem('Step 3', 'Price Locked', true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _stepItem(String step, String label, bool done) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          children: [
+            Text(
+              step,
+              style: const TextStyle(fontSize: 9, fontWeight: FontWeight.w700, color: AppColors.primary),
+            ),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: AppColors.onSurface),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Published Lot Summary Banner
+// ─────────────────────────────────────────────────────────────────────────────
+class _PublishedLotSummaryBanner extends StatelessWidget {
+  const _PublishedLotSummaryBanner({
+    this.lotId,
+    this.commodity,
+    this.variety,
+    this.quantity,
+    this.grade,
+    this.market,
+    this.expectedPrice,
+  });
+
+  final int? lotId;
+  final String? commodity;
+  final String? variety;
+  final double? quantity;
+  final String? grade;
+  final String? market;
+  final double? expectedPrice;
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveCommodity = (commodity != null && commodity!.isNotEmpty) ? commodity! : 'Red Onion';
+    final effectiveVariety = (variety != null && variety!.isNotEmpty) ? variety! : 'Nashik Red';
+    final effectiveGrade = (grade != null && grade!.isNotEmpty) ? grade! : 'A';
+    final effectiveQty = quantity != null ? '${quantity!.toStringAsFixed(0)} Q' : '20 Q';
+    final effectiveMarket = (market != null && market!.isNotEmpty) ? market! : 'Lasalgaon APMC';
+    final effectivePrice = expectedPrice != null ? '₹${expectedPrice!.toStringAsFixed(0)}/Q' : '₹3,350/Q';
+
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.md),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CommodityIcon(commodity: effectiveCommodity, size: 28, showBackground: true),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '$effectiveCommodity ($effectiveVariety)',
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: AppColors.onSurface),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'Grade $effectiveGrade',
+                            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.primary),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Lot #${lotId ?? '101'} • $effectiveQty • $effectiveMarket',
+                      style: const TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  const Text('Floor Locked', style: TextStyle(fontSize: 10, color: AppColors.onSurfaceVariant)),
+                  Text(
+                    effectivePrice,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.primary),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );

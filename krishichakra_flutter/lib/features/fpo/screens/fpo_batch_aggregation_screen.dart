@@ -170,7 +170,7 @@ class _FpoBatchAggregationScreenState
                             quantityQuintal: qty,
                             grade: selectedGrade,
                             bulbSpec: selectedGrade == 'Grade A'
-                                ? '52â€“58mm bulb'
+                                ? '52–58mm bulb'
                                 : '<45mm Uniformity',
                             moisturePct: 12.0,
                           );
@@ -321,7 +321,6 @@ class _FpoBatchAggregationScreenState
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final asyncAggregation =
         ref.watch(fpoBatchAggregationProvider(widget.batchId));
 

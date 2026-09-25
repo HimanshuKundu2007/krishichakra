@@ -19,6 +19,13 @@ def all_lots(db: Session = Depends(get_db)):
 def farmer_lots(farmer_id: int, db: Session = Depends(get_db)):
     return db.query(ProduceLot).filter(ProduceLot.farmer_id == farmer_id).all()
 
+@router.get("/lot/{lot_id}")
+def single_lot(lot_id: int, db: Session = Depends(get_db)):
+    lot = db.get(ProduceLot, lot_id)
+    if not lot:
+        raise HTTPException(status_code=404, detail="Lot not found")
+    return lot
+
 @router.post("/grade", response_model=GradeResponse)
 def grade(data: GradeRequest):
     result = grade_produce(data.crop, data.image_path, data.image_bytes_base64)

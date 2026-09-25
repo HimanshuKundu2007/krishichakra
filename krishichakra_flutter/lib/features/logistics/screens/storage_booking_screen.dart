@@ -36,7 +36,6 @@ class _StorageBookingScreenState extends ConsumerState<StorageBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final storageAsync = ref.watch(storageOptionsProvider);
 
     return Scaffold(

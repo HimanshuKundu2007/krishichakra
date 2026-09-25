@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/models/models.dart';
 import '../../core/theme/app_colors.dart';
 export 'commodity_icon.dart';
+export 'role_icon.dart';
 
 /// Shows whether price data comes from the government API or demo seed.
 /// Non-negotiable per backend README: never label DEMO_SEED as live data.

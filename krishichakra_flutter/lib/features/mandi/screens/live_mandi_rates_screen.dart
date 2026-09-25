@@ -280,7 +280,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                     builder: (context) {
                       final availableCrops = filterData.availableCommodities;
                       final List<(String, String, String)> dynamicCommodities = [
-                        ('all', 'ðŸ§º', 'All Crops'),
+                        ('all', '🧺', 'All Crops'),
                       ];
 
                       if (availableCrops.isNotEmpty) {
@@ -290,20 +290,20 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                         }
                       } else {
                         const baseline = [
-                          ('Wheat', 'ðŸŒ¾', 'Wheat'),
-                          ('Paddy', 'ðŸŒ¾', 'Paddy'),
-                          ('Sponge Gourd', 'ðŸ¥’', 'Sponge Gourd'),
-                          ('Garlic', 'ðŸ§„', 'Garlic'),
-                          ('Chilli', 'ðŸŒ¶ï¸', 'Chilli'),
-                          ('Onion', 'ðŸ§…', 'Onion'),
-                          ('Tomato', 'ðŸ…', 'Tomato'),
-                          ('Potato', 'ðŸ¥”', 'Potato'),
-                          ('Soybean', 'ðŸŒ±', 'Soybean'),
-                          ('Banana', 'ðŸŒ', 'Banana'),
-                          ('Guava', 'ðŸˆ', 'Guava'),
-                          ('Cotton', 'â˜ï¸', 'Cotton'),
-                          ('Maize', 'ðŸŒ½', 'Maize'),
-                          ('Pomegranate', 'ðŸŽ', 'Pomegranate'),
+                          ('Wheat', '🌾', 'Wheat'),
+                          ('Paddy', '🌾', 'Paddy'),
+                          ('Sponge Gourd', '🥒', 'Sponge Gourd'),
+                          ('Garlic', '🧄', 'Garlic'),
+                          ('Chilli', '🌶️', 'Chilli'),
+                          ('Onion', '🧅', 'Onion'),
+                          ('Tomato', '🍅', 'Tomato'),
+                          ('Potato', '🥔', 'Potato'),
+                          ('Soybean', '🌱', 'Soybean'),
+                          ('Banana', '🍌', 'Banana'),
+                          ('Guava', '🍈', 'Guava'),
+                          ('Cotton', '☁️', 'Cotton'),
+                          ('Maize', '🌽', 'Maize'),
+                          ('Pomegranate', '🍎', 'Pomegranate'),
                         ];
                         dynamicCommodities.addAll(baseline);
                       }
