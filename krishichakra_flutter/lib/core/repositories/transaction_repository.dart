@@ -90,6 +90,28 @@ class TransactionRepository {
     }
     return const [];
   }
+
+  /// Lock Mandi Deal (POST /api/transactions/deals)
+  Future<Map<String, dynamic>> lockMandiDeal({
+    required String commodity,
+    required double quantity,
+    required String market,
+    required double price,
+    required double estimatedNetRealization,
+  }) async {
+    final res = await _client.post(
+      '${ApiEndpoints.transactions}/deals',
+      data: {
+        'commodity': commodity,
+        'quantity': quantity,
+        'market': market,
+        'price': price,
+        'estimated_net_realization': estimatedNetRealization,
+        'status': 'LOCKED',
+      },
+    );
+    return res.data as Map<String, dynamic>;
+  }
 }
 
 // ─── Riverpod Providers ───────────────────────────────────────────────────────

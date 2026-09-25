@@ -67,6 +67,29 @@ class Buyer(Base):
     max_quantity: Mapped[float] = mapped_column(Float, default=1e9)
     quality_requirements: Mapped[str | None] = mapped_column(Text, nullable=True)
     offered_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    city: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    varieties: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    accepted_grade: Mapped[str | None] = mapped_column(String(100), default="Grade A", nullable=True)
+    indicative_price_min: Mapped[float | None] = mapped_column(Float, nullable=True)
+    indicative_price_max: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pickup_available: Mapped[bool] = mapped_column(Boolean, default=True)
+    delivery_available: Mapped[bool] = mapped_column(Boolean, default=True)
+    payment_terms: Mapped[str | None] = mapped_column(String(120), default="T+1 (24 hrs via KrishiChakra Escrow)", nullable=True)
+    verification_status: Mapped[str | None] = mapped_column(String(80), default="Demo Verified Buyer", nullable=True)
+    contact_available: Mapped[bool] = mapped_column(Boolean, default=True)
+    is_demo: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+class MandiDeal(Base):
+    __tablename__ = "mandi_deals"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    deal_id: Mapped[str] = mapped_column(String(60), unique=True, index=True)
+    commodity: Mapped[str] = mapped_column(String(120))
+    quantity: Mapped[float] = mapped_column(Float)
+    market: Mapped[str] = mapped_column(String(160))
+    price: Mapped[float] = mapped_column(Float)
+    estimated_net_realization: Mapped[float] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String(40), default="LOCKED")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 class Offer(Base):

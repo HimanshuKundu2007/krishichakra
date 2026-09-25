@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +32,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
     final reason = _reasonController.text.trim();
     if (reason.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text('Please enter a description for your grievance.'),
           backgroundColor: AppColors.error,
         ),
@@ -54,7 +55,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
               'Grievance registered. Zero-Whole-Batch Rejection Shield active.',
             ),
@@ -81,11 +82,13 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             floating: false,
             pinned: true,
             expandedHeight: AppSpacing.headerHeight,
@@ -111,7 +114,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.shield, color: Colors.white, size: 28),
+                      Icon(Icons.shield, color: Colors.white, size: 28),
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Column(
@@ -218,7 +221,7 @@ class _DisputeScreenState extends ConsumerState<DisputeScreen> {
                               color: Colors.white,
                             ),
                           )
-                        : const Icon(Icons.gavel, size: 20),
+                        : Icon(Icons.gavel, size: 20),
                     label: Text(
                       _isSubmitting
                           ? 'Submitting Grievance...'

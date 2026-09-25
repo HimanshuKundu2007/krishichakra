@@ -118,7 +118,10 @@ def test_12_required_backend_endpoints(client):
     # 5. /api/mandi/history
     r5 = c.get("/api/mandi/history?commodity=Onion&market=Pune APMC")
     assert r5.status_code == 200
-    assert isinstance(r5.json(), list)
+    res5 = r5.json()
+    assert isinstance(res5, (dict, list))
+    records5 = res5["records"] if isinstance(res5, dict) else res5
+    assert len(records5) >= 1
 
     # 6. /api/intelligence/recommend-sale
     r6 = c.post("/api/intelligence/recommend-sale", json={

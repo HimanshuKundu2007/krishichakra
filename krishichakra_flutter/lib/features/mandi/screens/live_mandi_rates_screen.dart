@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/kc_app_bar.dart';
 import '../../../shared/widgets/kc_widgets.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Screen 3 — Live Mandi Rates
 /// Reproduces Stitch screen with:
@@ -22,7 +23,9 @@ import '../../../shared/widgets/kc_widgets.dart';
 /// Strictly displays verified Government Market Data (AGMARKNET / data.gov.in)
 /// without fake or dummy prices in the live flow.
 class LiveMandiRatesScreen extends ConsumerStatefulWidget {
-  const LiveMandiRatesScreen({super.key});
+  const LiveMandiRatesScreen({super.key, this.initialCommodity});
+
+  final String? initialCommodity;
 
   @override
   ConsumerState<LiveMandiRatesScreen> createState() =>
@@ -30,31 +33,44 @@ class LiveMandiRatesScreen extends ConsumerStatefulWidget {
 }
 
 class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
-  String _selectedCommodity = 'onion';
+  late String _selectedCommodity;
   int _radiusIdx = 1; // 0=50km, 1=150km, 2=All MH
   bool _isListening = false;
   final TextEditingController _searchCtrl = TextEditingController();
   String _searchFilter = '';
 
-  String? _selectedState;
+  String? _selectedState = 'Maharashtra';
   String? _selectedDistrict;
   String? _selectedMarket;
+  String? _selectedVariety;
+  bool _isAllIndia = false;
 
-  static const _commodities = [
-    ('all', '🧺', 'All Crops'),
-    ('onion', '🧅', 'Red Onion'),
-    ('tomato', '🍅', 'Tomato'),
-    ('potato', '🥔', 'Potato'),
-    ('soybean', '🌱', 'Soybean'),
-    ('pomegranate', '🍎', 'Pomegranate'),
-    ('maize', '🌽', 'Maize'),
+  List<String> _radiusLabels(AppLocalizations l10n) => [
+    l10n.within50km,
+    l10n.within150km,
+    l10n.allMaharashtraLabel,
   ];
 
-  static const _radiusLabels = [
-    'Within 50km',
-    'Within 150km',
-    'All Maharashtra'
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _selectedCommodity = (widget.initialCommodity != null && widget.initialCommodity!.isNotEmpty)
+        ? widget.initialCommodity!
+        : 'onion';
+  }
+
+  @override
+  void didUpdateWidget(covariant LiveMandiRatesScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialCommodity != null &&
+        widget.initialCommodity!.isNotEmpty &&
+        widget.initialCommodity != oldWidget.initialCommodity) {
+      setState(() {
+        _selectedCommodity = widget.initialCommodity!;
+        _searchFilter = '';
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -92,22 +108,33 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
     ref.invalidate(filteredMandiPricesProvider);
     ref.invalidate(latestMandiPricesProvider);
     ref.invalidate(availableMandiFiltersProvider);
+    ref.invalidate(dynamicMandiFiltersProvider);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusAsync = ref.watch(mandiStatusProvider);
-    final filtersAsync = ref.watch(availableMandiFiltersProvider);
 
     final commodityToQuery = _searchFilter.isNotEmpty
         ? _searchFilter
         : (_selectedCommodity == 'all' ? null : _selectedCommodity);
+
+    final cascadeQuery = (
+      state: _selectedState,
+      district: _selectedDistrict,
+      market: _selectedMarket,
+      commodity: commodityToQuery,
+    );
+    final filtersAsync = ref.watch(dynamicMandiFiltersProvider(cascadeQuery));
+    final filterData = filtersAsync.asData?.value ?? MandiFiltersData.empty;
 
     final filterQuery = (
       commodity: commodityToQuery,
       state: _selectedState,
       district: _selectedDistrict,
       market: _selectedMarket,
+      variety: _selectedVariety,
       limit: 100,
     );
 
@@ -125,9 +152,10 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
     final lastSuccessfulSync = status?.lastSuccessfulSync;
     final latestDataDate = status?.latestDataDate;
 
-    final availableStates = filtersAsync.asData?.value.states ?? [];
-    final availableDistricts = filtersAsync.asData?.value.districts ?? [];
-    final availableMarkets = filtersAsync.asData?.value.markets ?? [];
+    final availableStates = filterData.states;
+    final availableDistricts = filterData.districts;
+    final availableMarkets = filterData.markets;
+    final availableVarieties = filterData.varieties;
 
     return Scaffold(
       backgroundColor: AppColors.surface,
@@ -139,19 +167,20 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
           slivers: [
             // Header — strictly showLiveIndicator only if status.isLive == true
             SliverAppBar(
+              automaticallyImplyLeading: false,
               floating: true,
               snap: true,
               expandedHeight: AppSpacing.headerHeight,
               backgroundColor: Colors.transparent,
               flexibleSpace: KcAppBar(
-                title: 'Live Mandi Rates',
-                subtitle: 'Official Agmarknet / data.gov.in rates',
+                title: l10n.liveMandiRates,
+                subtitle: l10n.officialAgmarknetRates,
                 showLiveIndicator: isLive,
                 actions: [
                   IconButton(
                     icon: Icon(Icons.refresh,
                         color: AppColors.onSurfaceVariant),
-                    tooltip: 'Refresh Gov Rates',
+                    tooltip: l10n.refreshGovRates,
                     onPressed: _refreshAll,
                   ),
                 ],
@@ -168,7 +197,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
 
                   // Search bar with voice
                   VoiceSearchBar(
-                    hint: 'Search crop e.g. Onion, Tomato, Soybean',
+                    hint: l10n.searchCropHint,
                     isListening: _isListening,
                     onMicTap: () => setState(() => _isListening = !_isListening),
                     onSubmitted: (query) {
@@ -210,7 +239,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                                   size: 12, color: AppColors.secondary),
                               const SizedBox(width: 3),
                               Text(
-                                'e-NAM Verified',
+                                l10n.eNamVerified,
                                 style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
@@ -224,44 +253,135 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                   ),
                   const SizedBox(height: AppSpacing.md),
 
-                  // Commodity ribbon
-                  _CommodityRibbon(
-                    commodities: _commodities,
-                    selected: _selectedCommodity,
-                    onChanged: (c) => setState(() {
-                      _selectedCommodity = c;
-                      _searchFilter = '';
+                  // â”€â”€ Maharashtra Focus vs All India Toggle Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                  _StateScopeToggle(
+                    isAllIndia: _isAllIndia,
+                    selectedState: _selectedState,
+                    totalRecords: filterData.totalRecords,
+                    onSelectMaharashtra: () => setState(() {
+                      _isAllIndia = false;
+                      _selectedState = 'Maharashtra';
+                      _selectedDistrict = null;
+                      _selectedMarket = null;
+                      _selectedVariety = null;
                     }),
+                    onSelectAllIndia: () => setState(() {
+                      _isAllIndia = true;
+                      _selectedState = null;
+                      _selectedDistrict = null;
+                      _selectedMarket = null;
+                      _selectedVariety = null;
+                    }),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // â”€â”€ Dynamic Commodity ribbon from unified backend catalogue â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+                  Builder(
+                    builder: (context) {
+                      final availableCrops = filterData.availableCommodities;
+                      final List<(String, String, String)> dynamicCommodities = [
+                        ('all', 'ðŸ§º', 'All Crops'),
+                      ];
+
+                      if (availableCrops.isNotEmpty) {
+                        for (final crop in availableCrops) {
+                          final icon = filterData.commodityIcons[crop] ?? CommodityIcon.getEmoji(crop);
+                          dynamicCommodities.add((crop, icon, crop));
+                        }
+                      } else {
+                        const baseline = [
+                          ('Wheat', 'ðŸŒ¾', 'Wheat'),
+                          ('Paddy', 'ðŸŒ¾', 'Paddy'),
+                          ('Sponge Gourd', 'ðŸ¥’', 'Sponge Gourd'),
+                          ('Garlic', 'ðŸ§„', 'Garlic'),
+                          ('Chilli', 'ðŸŒ¶ï¸', 'Chilli'),
+                          ('Onion', 'ðŸ§…', 'Onion'),
+                          ('Tomato', 'ðŸ…', 'Tomato'),
+                          ('Potato', 'ðŸ¥”', 'Potato'),
+                          ('Soybean', 'ðŸŒ±', 'Soybean'),
+                          ('Banana', 'ðŸŒ', 'Banana'),
+                          ('Guava', 'ðŸˆ', 'Guava'),
+                          ('Cotton', 'â˜ï¸', 'Cotton'),
+                          ('Maize', 'ðŸŒ½', 'Maize'),
+                          ('Pomegranate', 'ðŸŽ', 'Pomegranate'),
+                        ];
+                        dynamicCommodities.addAll(baseline);
+                      }
+
+                      if (_selectedCommodity != 'all' &&
+                          !dynamicCommodities.any((c) => c.$1.toLowerCase() == _selectedCommodity.toLowerCase())) {
+                        dynamicCommodities.add((
+                          _selectedCommodity,
+                          CommodityIcon.getEmoji(_selectedCommodity),
+                          _selectedCommodity,
+                        ));
+                      }
+
+                      return _CommodityRibbon(
+                        commodities: dynamicCommodities,
+                        selected: _selectedCommodity,
+                        onChanged: (c) => setState(() {
+                          _selectedCommodity = c;
+                          _selectedVariety = null;
+                          _searchFilter = '';
+                        }),
+                      );
+                    },
                   ),
                   const SizedBox(height: AppSpacing.sm),
 
-                  // Location Filters Row (State, District, Market)
+                  // Hierarchical Location & Variety Filters Row (State -> District -> Market -> Commodity -> Variety)
                   _LocationFilterRow(
                     selectedState: _selectedState,
                     selectedDistrict: _selectedDistrict,
                     selectedMarket: _selectedMarket,
+                    selectedVariety: _selectedVariety,
+                    isAllIndia: _isAllIndia,
+                    availableVarietiesCount: availableVarieties.length,
                     onTapState: () => _showFilterSheet(
-                      title: 'Select State',
+                      title: 'Select State (AGMARKNET)',
                       options: availableStates,
                       selectedValue: _selectedState,
-                      onSelected: (val) => setState(() => _selectedState = val),
+                      onSelected: (val) => setState(() {
+                        _selectedState = val;
+                        _isAllIndia = (val == null || val.toLowerCase() != 'maharashtra');
+                        _selectedDistrict = null;
+                        _selectedMarket = null;
+                        _selectedVariety = null;
+                      }),
                     ),
                     onTapDistrict: () => _showFilterSheet(
-                      title: 'Select District',
+                      title: 'Select District (${_selectedState ?? "All India"})',
                       options: availableDistricts,
                       selectedValue: _selectedDistrict,
-                      onSelected: (val) => setState(() => _selectedDistrict = val),
+                      onSelected: (val) => setState(() {
+                        _selectedDistrict = val;
+                        _selectedMarket = null;
+                        _selectedVariety = null;
+                      }),
                     ),
                     onTapMarket: () => _showFilterSheet(
-                      title: 'Select Market',
+                      title: 'Select APMC Market (${_selectedDistrict ?? "All Districts"})',
                       options: availableMarkets,
                       selectedValue: _selectedMarket,
-                      onSelected: (val) => setState(() => _selectedMarket = val),
+                      onSelected: (val) => setState(() {
+                        _selectedMarket = val;
+                        _selectedVariety = null;
+                      }),
+                    ),
+                    onTapVariety: () => _showFilterSheet(
+                      title: 'Select Variety (${commodityToQuery ?? "Crop"})',
+                      options: availableVarieties,
+                      selectedValue: _selectedVariety,
+                      onSelected: (val) => setState(() => _selectedVariety = val),
                     ),
                     onClearAll: () => setState(() {
-                      _selectedState = null;
+                      _selectedState = 'Maharashtra';
+                      _isAllIndia = false;
                       _selectedDistrict = null;
                       _selectedMarket = null;
+                      _selectedVariety = null;
+                      _selectedCommodity = 'Onion';
                       _searchFilter = '';
                     }),
                   ),
@@ -269,7 +389,9 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
 
                   // Radius filter
                   _RadiusFilter(
-                    labels: _radiusLabels,
+                    labels: _isAllIndia
+                        ? [l10n.within50km, l10n.within150km, l10n.allIndiaLabel]
+                        : _radiusLabels(l10n),
                     selectedIdx: _radiusIdx,
                     onChanged: (i) => setState(() => _radiusIdx = i),
                   ),
@@ -291,11 +413,11 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
 
                   // Mandi cards list with loading, error, and empty states
                   pricesAsync.when(
-                    loading: () => const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 40),
+                    loading: () => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 40),
                       child: Center(
                         child: KcLoadingIndicator(
-                          message: 'Retrieving official government mandi prices...',
+                          message: l10n.loadingGovData,
                         ),
                       ),
                     ),
@@ -304,9 +426,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                         return KcBackendUnavailableState(onRetry: _refreshAll);
                       }
                       return KcErrorState(
-                        message: isFailed
-                            ? 'Showing last available government data (none cached yet). Sync error: $err'
-                            : err.toString(),
+                        message: l10n.govSourceUnavailable,
                         onRetry: _refreshAll,
                       );
                     },
@@ -324,42 +444,42 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                             ),
                             child: Column(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.cloud_off_outlined,
                                   size: 44,
                                   color: AppColors.error,
                                 ),
                                 const SizedBox(height: AppSpacing.sm),
-                                const Text(
-                                  'No government market data is currently available.',
+                                Text(
+                                  l10n.noGovDataAvailable,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                     color: AppColors.onSurface,
                                   ),
                                 ),
                                 const SizedBox(height: 6),
-                                const Text(
-                                  'Official Agmarknet / data.gov.in rates have not yet been synchronized. No fake or demo prices are substituted.',
+                                Text(
+                                  l10n.noGovDataSubtitle,
                                   textAlign: TextAlign.center,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 12,
                                     color: AppColors.onSurfaceVariant,
                                   ),
                                 ),
                                 const SizedBox(height: AppSpacing.md),
                                 ElevatedButton.icon(
-                                  icon: const Icon(Icons.sync, size: 16),
-                                  label: const Text('Synchronize with Agmarknet'),
+                                  icon: Icon(Icons.sync, size: 16),
+                                  label: Text(l10n.synchronizeWithAgmarknet),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.primary,
                                     foregroundColor: AppColors.onPrimary,
                                   ),
                                   onPressed: () async {
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Triggering government mandi sync...'),
+                                      SnackBar(
+                                        content: Text(l10n.triggeringGovSync),
                                       ),
                                     );
                                     try {
@@ -393,9 +513,10 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                               ),
                               const SizedBox(height: AppSpacing.sm),
                               Text(
-                                'No government records found for ${_searchFilter.isNotEmpty ? _searchFilter.toUpperCase() : _selectedCommodity.toUpperCase()}',
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                l10n.noMarketDataForCommodity,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 15,
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.onSurface,
                                 ),
@@ -403,7 +524,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                               const SizedBox(height: 4),
                               Text(
                                 isFailed || isStale
-                                    ? 'Showing last available government data: No matching arrivals found for this filter.'
+                                      ? '${l10n.showingLastAvailableData}: No matching arrivals found for this filter.'
                                     : 'No dummy prices are shown. Official Agmarknet synchronization can be initiated below.',
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(
@@ -413,16 +534,16 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                               ),
                               const SizedBox(height: AppSpacing.md),
                               ElevatedButton.icon(
-                                icon: const Icon(Icons.sync, size: 16),
-                                label: const Text('Synchronize with Agmarknet'),
+                                icon: Icon(Icons.sync, size: 16),
+                                label: Text(l10n.synchronizeWithAgmarknet),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: AppColors.onPrimary,
                                 ),
                                 onPressed: () async {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Triggering government mandi sync...'),
+                                    SnackBar(
+                                      content: Text(l10n.triggeringGovSync),
                                     ),
                                   );
                                   try {
@@ -454,15 +575,15 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.history_toggle_off,
+                                  Icon(Icons.history_toggle_off,
                                       color: AppColors.tertiary, size: 20),
                                   const SizedBox(width: 10),
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          'Showing last available government data${latestDataDate != null ? ' from $latestDataDate' : ''}',
+                                          Text(
+                                            '${l10n.showingLastAvailableData}' + (latestDataDate != null ? ' from $latestDataDate' : ''),
                                           style: const TextStyle(
                                             fontSize: 12.5,
                                             fontWeight: FontWeight.w700,
@@ -494,7 +615,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                               child: _MandiCard(
                                 price: m,
                                 isHighlighted: isTop,
-                                tag: isTop ? 'Top Modal Rate' : null,
+                                tag: isTop ? l10n.topModalRate : null,
                                 isLive: isLive,
                                 isLastAvailable: isFailed || isStale,
                                 lastUpdated: m.sourceUpdatedAt ??
@@ -502,10 +623,10 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
                                     lastSuccessfulSync ??
                                     lastUpdated,
                                 onTap: () => context.push(
-                                  '${AppRoutes.markets}/detail?market=${Uri.encodeComponent(m.market)}&commodity=${Uri.encodeComponent(m.commodity)}',
+                                  '${AppRoutes.markets}/detail?market=${Uri.encodeComponent(m.market)}&commodity=${Uri.encodeComponent(m.displayName)}',
                                 ),
                                 onCalculate: () => context.push(
-                                  '${AppRoutes.netRealization}?market=${Uri.encodeComponent(m.market)}&commodity=${Uri.encodeComponent(m.commodity)}&qty=20',
+                                  '${AppRoutes.netRealization}?market=${Uri.encodeComponent(m.market)}&commodity=${Uri.encodeComponent(m.displayName)}&qty=20',
                                 ),
                               ),
                             );
@@ -532,7 +653,7 @@ class _LiveMandiRatesScreenState extends ConsumerState<LiveMandiRatesScreen> {
   }
 }
 
-// ── Sub-widgets ───────────────────────────────────────────────────────────────
+// â”€â”€ Sub-widgets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _CommodityRibbon extends StatelessWidget {
   const _CommodityRibbon({
@@ -555,7 +676,8 @@ class _CommodityRibbon extends StatelessWidget {
         separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.xs),
         itemBuilder: (_, i) {
           final c = commodities[i];
-          final isSelected = c.$1 == selected;
+          final isSelected = c.$1.toLowerCase() == selected.toLowerCase() ||
+              (selected.toLowerCase() == 'all' && c.$1.toLowerCase() == 'all');
           return GestureDetector(
             onTap: () => onChanged(c.$1),
             child: AnimatedContainer(
@@ -596,29 +718,168 @@ class _CommodityRibbon extends StatelessWidget {
   }
 }
 
+class _StateScopeToggle extends StatelessWidget {
+  const _StateScopeToggle({
+    required this.isAllIndia,
+    required this.selectedState,
+    required this.totalRecords,
+    required this.onSelectMaharashtra,
+    required this.onSelectAllIndia,
+  });
+
+  final bool isAllIndia;
+  final String? selectedState;
+  final int totalRecords;
+  final VoidCallback onSelectMaharashtra;
+  final VoidCallback onSelectAllIndia;
+
+  @override
+  Widget build(BuildContext context) {
+    final isMhActive = !isAllIndia && (selectedState == 'Maharashtra' || selectedState == null);
+
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.6)),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: GestureDetector(
+              onTap: onSelectMaharashtra,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: isMhActive
+                      ? AppColors.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: isMhActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.agriculture_rounded,
+                      size: 16,
+                      color: isMhActive ? AppColors.onPrimary : AppColors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        'Maharashtra (Focus)',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isMhActive ? AppColors.onPrimary : AppColors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: GestureDetector(
+              onTap: onSelectAllIndia,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: !isMhActive
+                      ? AppColors.primary
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: !isMhActive
+                      ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.public_rounded,
+                      size: 16,
+                      color: !isMhActive ? AppColors.onPrimary : AppColors.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        'All India (All Mandis)',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: !isMhActive ? AppColors.onPrimary : AppColors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _LocationFilterRow extends StatelessWidget {
   const _LocationFilterRow({
     required this.selectedState,
     required this.selectedDistrict,
     required this.selectedMarket,
+    this.selectedVariety,
+    this.isAllIndia = false,
+    this.availableVarietiesCount = 0,
     required this.onTapState,
     required this.onTapDistrict,
     required this.onTapMarket,
+    required this.onTapVariety,
     required this.onClearAll,
   });
 
   final String? selectedState;
   final String? selectedDistrict;
   final String? selectedMarket;
+  final String? selectedVariety;
+  final bool isAllIndia;
+  final int availableVarietiesCount;
   final VoidCallback onTapState;
   final VoidCallback onTapDistrict;
   final VoidCallback onTapMarket;
+  final VoidCallback onTapVariety;
   final VoidCallback onClearAll;
 
   @override
   Widget build(BuildContext context) {
-    final hasActiveFilter =
-        selectedState != null || selectedDistrict != null || selectedMarket != null;
+    final hasActiveFilter = (isAllIndia
+            ? selectedState != null
+            : (selectedState != 'Maharashtra' && selectedState != null)) ||
+        selectedDistrict != null ||
+        selectedMarket != null ||
+        selectedVariety != null;
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -626,7 +887,9 @@ class _LocationFilterRow extends StatelessWidget {
         children: [
           _FilterChipButton(
             icon: Icons.map_outlined,
-            label: selectedState != null ? 'State: $selectedState' : 'State: All',
+            label: selectedState != null
+                ? 'State: $selectedState'
+                : (isAllIndia ? 'State: All India' : 'State: Maharashtra'),
             isActive: selectedState != null,
             onTap: onTapState,
           ),
@@ -648,6 +911,17 @@ class _LocationFilterRow extends StatelessWidget {
             isActive: selectedMarket != null,
             onTap: onTapMarket,
           ),
+          if (availableVarietiesCount > 0 || selectedVariety != null) ...[
+            const SizedBox(width: AppSpacing.xs),
+            _FilterChipButton(
+              icon: Icons.grain_outlined,
+              label: selectedVariety != null
+                  ? 'Variety: $selectedVariety'
+                  : 'Variety: All',
+              isActive: selectedVariety != null,
+              onTap: onTapVariety,
+            ),
+          ],
           if (hasActiveFilter) ...[
             const SizedBox(width: AppSpacing.xs),
             GestureDetector(
@@ -682,6 +956,7 @@ class _LocationFilterRow extends StatelessWidget {
     );
   }
 }
+
 
 class _FilterChipButton extends StatelessWidget {
   const _FilterChipButton({
@@ -836,7 +1111,7 @@ class _FilterOptionSheetState extends State<_FilterOptionSheet> {
                   controller: _searchCtrl,
                   decoration: InputDecoration(
                     hintText: 'Search...',
-                    prefixIcon: const Icon(Icons.search, size: 18),
+                    prefixIcon: Icon(Icons.search, size: 18),
                     filled: true,
                     fillColor: AppColors.surfaceContainerHigh,
                     contentPadding:

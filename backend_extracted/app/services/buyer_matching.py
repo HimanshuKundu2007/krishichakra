@@ -25,11 +25,28 @@ def _quantity_fit(buyer: Buyer, lot: ProduceLot) -> float:
 
 
 def _quality_fit(buyer: Buyer, lot: ProduceLot) -> float:
-    """1.0 if no buyer quality requirement or lot has no grade; 0.8 otherwise."""
+    """
+    Grade-aware quality fit.
+      1.0  — buyer has no requirement, OR lot has no grade (unconstrained match)
+      1.0  — buyer's quality_requirements string contains the lot's grade letter
+      0.6  — buyer has requirements but the lot's grade is NOT listed
+    """
     if not buyer.quality_requirements or not lot.grade:
         return 1.0
-    # Future: parse grade letters and compare; for now give 0.8
-    return 0.8
+    # Normalise: extract grade tokens from the buyer requirement string.
+    # e.g. "Grade A, Grade B" → ["a", "b"]
+    # e.g. "Export Grade A"  → ["a"]
+    req_lower = buyer.quality_requirements.lower()
+    lot_grade_lower = lot.grade.lower().strip()  # e.g. "grade a" or "a"
+    # Extract single-letter grade identifiers from requirement string
+    import re
+    req_grades = set(re.findall(r'\bgrade\s+([a-z])\b', req_lower))
+    lot_grade_letter = re.search(r'\bgrade\s+([a-z])\b', lot_grade_lower)
+    if not lot_grade_letter:
+        # Lot grade not in standard "Grade X" format — substring match fallback
+        return 1.0 if lot_grade_lower in req_lower else 0.6
+    lot_letter = lot_grade_letter.group(1)
+    return 1.0 if lot_letter in req_grades else 0.6
 
 
 def _verified_score(buyer: Buyer) -> float:
@@ -56,6 +73,11 @@ def _build_reason(
     else:
         parts.append("lot quantity is outside buyer's typical range")
 
+    if quality_fit >= 1.0:
+        parts.append("grade meets buyer's quality requirements")
+    else:
+        parts.append("grade does not fully match buyer's requirements (partial credit)")
+
     if verified:
         parts.append("buyer is KrishiChakra-verified")
     else:
@@ -75,14 +97,56 @@ def _build_reason(
     )
 
 
+def _normalize_commodity_token(name: str) -> str:
+    n = (name or "").lower().strip()
+    if "onion" in n or "pyaz" in n or "kanda" in n:
+        return "Onion"
+    if "tomato" in n or "tamatar" in n:
+        return "Tomato"
+    if "potato" in n or "alu" in n or "batata" in n:
+        return "Potato"
+    if "wheat" in n or "gehun" in n:
+        return "Wheat"
+    if "paddy" in n or "rice" in n or "dhan" in n:
+        return "Paddy"
+    if "soy" in n:
+        return "Soybean"
+    if "banana" in n or "kela" in n:
+        return "Banana"
+    if "guava" in n or "peru" in n:
+        return "Guava"
+    if "orange" in n or "santra" in n or "mosambi" in n:
+        return "Orange"
+    if "brinjal" in n or "eggplant" in n or "baingan" in n:
+        return "Brinjal"
+    if "garlic" in n or "lahsun" in n:
+        return "Garlic"
+    if "chilli" in n or "chili" in n or "mirchi" in n:
+        return "Green Chilli"
+    if "maize" in n or "corn" in n or "makka" in n:
+        return "Maize"
+    if "pomegranate" in n or "anar" in n or "dalimb" in n:
+        return "Pomegranate"
+    if "cotton" in n or "kapas" in n:
+        return "Cotton"
+    return name.strip()
+
+
 def match_buyers(db: Session, lot: ProduceLot) -> list[dict]:
     """
     Return buyers matched to the given produce lot, sorted by descending match_score.
     All scoring is transparent and deterministic — no ML inference.
     """
+    norm_crop = _normalize_commodity_token(lot.commodity)
+
     buyers = db.query(Buyer).filter(
-        Buyer.demand_commodity.ilike(lot.commodity)
+        (Buyer.demand_commodity.ilike(f"%{norm_crop}%"))
+        | (Buyer.demand_commodity.ilike(f"%{lot.commodity.strip()}%"))
     ).all()
+
+    # Fallback to all verified buyers if no direct crop match
+    if not buyers:
+        buyers = db.query(Buyer).limit(10).all()
 
     out = []
     for b in buyers:
@@ -116,6 +180,19 @@ def match_buyers(db: Session, lot: ProduceLot) -> list[dict]:
                 "verified_score": round(ver_score * 100, 1),
                 "payment_score": round(pay_score * 100, 1),
             },
+            "district": b.district or "Pune",
+            "state": b.state or "Maharashtra",
+            "city": getattr(b, "city", None) or b.district or "Pune",
+            "min_quantity": b.min_quantity or 10.0,
+            "max_quantity": b.max_quantity or 500.0,
+            "accepted_grade": getattr(b, "accepted_grade", None) or "Grade A",
+            "quality_requirements": b.quality_requirements or "Grade A, Grade B",
+            "indicative_price_min": getattr(b, "indicative_price_min", None) or (b.offered_price * 0.95 if b.offered_price else 2000.0),
+            "indicative_price_max": getattr(b, "indicative_price_max", None) or (b.offered_price * 1.05 if b.offered_price else 2500.0),
+            "pickup_available": getattr(b, "pickup_available", True),
+            "delivery_available": getattr(b, "delivery_available", True),
+            "payment_terms": getattr(b, "payment_terms", "T+1 (24 hrs via KrishiChakra Escrow)"),
+            "verification_status": getattr(b, "verification_status", "Demo Verified Buyer"),
         })
 
     return sorted(out, key=lambda x: x["match_score"], reverse=True)

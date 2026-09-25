@@ -1,36 +1,13 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Adaptive shell: bottom nav on mobile, nav rail on wide screens.
 class MainShell extends StatelessWidget {
   const MainShell({super.key, required this.shell});
 
   final StatefulNavigationShell shell;
-
-  static const _destinations = [
-    _NavDestination(
-      icon: Icons.home_outlined,
-      selectedIcon: Icons.home,
-      label: 'Home',
-    ),
-    _NavDestination(
-      icon: Icons.storefront_outlined,
-      selectedIcon: Icons.storefront,
-      label: 'Markets',
-      badge: 'LIVE',
-    ),
-    _NavDestination(
-      icon: Icons.inventory_2_outlined,
-      selectedIcon: Icons.inventory_2,
-      label: 'My Lots',
-    ),
-    _NavDestination(
-      icon: Icons.person_outlined,
-      selectedIcon: Icons.person,
-      label: 'Profile',
-    ),
-  ];
 
   void _onTap(int index) {
     shell.goBranch(
@@ -41,8 +18,22 @@ class MainShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final labels = [
+      l10n?.home ?? 'Home',
+      l10n?.markets ?? 'Markets',
+      l10n?.myLots ?? 'My Lots',
+      l10n?.profile ?? 'Profile',
+    ];
+
+    const icons = [
+      _NavIcons(Icons.home_outlined, Icons.home),
+      _NavIcons(Icons.storefront_outlined, Icons.storefront, badge: 'LIVE'),
+      _NavIcons(Icons.inventory_2_outlined, Icons.inventory_2),
+      _NavIcons(Icons.person_outlined, Icons.person),
+    ];
+
     return LayoutBuilder(builder: (context, constraints) {
-      // Wide: show navigation rail (≥600px)
       if (constraints.maxWidth >= 600) {
         return Scaffold(
           body: Row(
@@ -53,13 +44,13 @@ class MainShell extends StatelessWidget {
                 onDestinationSelected: _onTap,
                 labelType: NavigationRailLabelType.all,
                 indicatorColor: AppColors.secondaryContainer,
-                destinations: _destinations.map((d) {
+                destinations: List.generate(icons.length, (i) {
                   return NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
+                    icon: Icon(icons[i].icon),
+                    selectedIcon: Icon(icons[i].selectedIcon),
+                    label: Text(labels[i]),
                   );
-                }).toList(),
+                }),
               ),
               const VerticalDivider(width: 1, thickness: 1),
               Expanded(child: shell),
@@ -68,13 +59,13 @@ class MainShell extends StatelessWidget {
         );
       }
 
-      // Mobile: bottom navigation bar
       return Scaffold(
         body: shell,
         bottomNavigationBar: _KrishiBottomNav(
           currentIndex: shell.currentIndex,
           onTap: _onTap,
-          destinations: _destinations,
+          labels: labels,
+          icons: icons,
         ),
       );
     });
@@ -85,24 +76,26 @@ class _KrishiBottomNav extends StatelessWidget {
   const _KrishiBottomNav({
     required this.currentIndex,
     required this.onTap,
-    required this.destinations,
+    required this.labels,
+    required this.icons,
   });
 
   final int currentIndex;
   final ValueChanged<int> onTap;
-  final List<_NavDestination> destinations;
+  final List<String> labels;
+  final List<_NavIcons> icons;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest.withOpacity(0.95),
+        color: AppColors.surfaceContainerLowest.withValues(alpha: 0.95),
         border: Border(
           top: BorderSide(color: AppColors.surfaceContainer, width: 1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, -2),
             blurRadius: 12,
           ),
@@ -113,8 +106,8 @@ class _KrishiBottomNav extends StatelessWidget {
         child: SizedBox(
           height: 64,
           child: Row(
-            children: List.generate(destinations.length, (index) {
-              final d = destinations[index];
+            children: List.generate(icons.length, (index) {
+              final d = icons[index];
               final isSelected = index == currentIndex;
               return Expanded(
                 child: InkWell(
@@ -159,7 +152,7 @@ class _KrishiBottomNav extends StatelessWidget {
                       ),
                       const SizedBox(height: 3),
                       Text(
-                        d.label,
+                        labels[index],
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: isSelected
@@ -183,16 +176,9 @@ class _KrishiBottomNav extends StatelessWidget {
   }
 }
 
-class _NavDestination {
-  const _NavDestination({
-    required this.icon,
-    required this.selectedIcon,
-    required this.label,
-    this.badge,
-  });
-
+class _NavIcons {
+  const _NavIcons(this.icon, this.selectedIcon, {this.badge});
   final IconData icon;
   final IconData selectedIcon;
-  final String label;
   final String? badge;
 }

@@ -15,9 +15,12 @@ class ApiEndpoints {
   // ── Mandi / Prices ─────────────────────────────────────────────────────────
   static const String mandiPrices = '$_api/mandi/prices';
   static const String mandiLatest = '$_api/mandi/latest';
+  static const String mandiPulse = '$_api/mandi/pulse';
+  static const String mandiCommodities = '$_api/mandi/commodities';
   static const String mandiHistory = '$_api/mandi/history';
   static const String mandiStatus = '$_api/mandi/status';
   static const String mandiSync = '$_api/mandi/sync';
+  static const String mandiFilters = '$_api/mandi/filters';
 
   // ── Farmers ────────────────────────────────────────────────────────────────
   static const String farmers = '$_api/farmers';

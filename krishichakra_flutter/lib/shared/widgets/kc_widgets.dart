@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/models/models.dart';
 import '../../core/theme/app_colors.dart';
+export 'commodity_icon.dart';
 
 /// Shows whether price data comes from the government API or demo seed.
 /// Non-negotiable per backend README: never label DEMO_SEED as live data.
@@ -152,17 +153,18 @@ class _CompactTag extends StatelessWidget {
       );
     }
 
+    final String cleanSource = source.isNotEmpty ? source : 'Government Market Data';
     final String titleText;
     if (!hasEverSynced) {
       titleText = 'No government market data is currently available.';
     } else if (isLastAvailable) {
       titleText = latestDataDate != null && latestDataDate!.isNotEmpty
-          ? 'Showing last available government data ($latestDataDate)'
-          : 'Showing last available government data';
+          ? 'Showing last available $cleanSource ($latestDataDate)'
+          : 'Showing last available $cleanSource';
     } else if (isLive) {
-      titleText = 'Source: Government Market Data (LIVE)';
+      titleText = 'Source: $cleanSource (LIVE)';
     } else {
-      titleText = 'Source: Government Market Data';
+      titleText = 'Source: $cleanSource';
     }
 
     final effectiveDate = !hasEverSynced
@@ -393,30 +395,35 @@ class _FullTag extends StatelessWidget {
                     : (isLive ? AppColors.secondary : AppColors.onSurfaceVariant)),
           ),
           const SizedBox(width: 6),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                titleText,
-                style: TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700,
-                  color: !hasEverSynced
-                      ? AppColors.error
-                      : (isLastAvailable
-                          ? AppColors.tertiary
-                          : (isLive ? AppColors.secondary : AppColors.onSurface)),
-                ),
-              ),
-              if (effectiveDate != null)
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
                 Text(
-                  effectiveDate,
+                  titleText,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 10,
-                    color: AppColors.onSurfaceVariant,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: !hasEverSynced
+                        ? AppColors.error
+                        : (isLastAvailable
+                            ? AppColors.tertiary
+                            : (isLive ? AppColors.secondary : AppColors.onSurface)),
                   ),
                 ),
-            ],
+                if (effectiveDate != null)
+                  Text(
+                    effectiveDate,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ],
       ),
@@ -470,14 +477,31 @@ class _LivePulsingDotState extends State<LivePulsingDot>
   }
 }
 
-/// Standard price change badge (green up / red down).
+/// Standard price change badge (green up / red down / neutral dash).
 class PriceChangeBadge extends StatelessWidget {
-  const PriceChangeBadge({super.key, required this.changePercent});
-  final double changePercent;
+  const PriceChangeBadge({super.key, this.changePercent});
+  final double? changePercent;
 
   @override
   Widget build(BuildContext context) {
-    final isUp = changePercent >= 0;
+    if (changePercent == null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerHigh.withOpacity(0.5),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Text(
+          '—',
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+    final isUp = changePercent! >= 0;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
@@ -496,7 +520,7 @@ class PriceChangeBadge extends StatelessWidget {
           ),
           const SizedBox(width: 2),
           Text(
-            '${isUp ? '+' : ''}${changePercent.toStringAsFixed(1)}%',
+            '${isUp ? '+' : ''}${changePercent!.toStringAsFixed(1)}%',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w700,

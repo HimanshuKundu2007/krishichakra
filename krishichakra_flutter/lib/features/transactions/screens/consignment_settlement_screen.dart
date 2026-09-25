@@ -1,3 +1,4 @@
+﻿import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -81,7 +82,7 @@ class _ConsignmentSettlementScreenState
           _downloadMessage = 'APMC-Tax-Invoice-LOT9021.pdf Downloaded';
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Invoice saved: APMC-Tax-Invoice-LOT9021.pdf'),
             backgroundColor: AppColors.secondary,
           ),
@@ -111,7 +112,7 @@ class _ConsignmentSettlementScreenState
           _shareMessage = 'Link copied to clipboard for WhatsApp dispatch!';
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('Settlement slip link copied for WhatsApp sharing!'),
             backgroundColor: AppColors.secondary,
           ),
@@ -125,6 +126,7 @@ class _ConsignmentSettlementScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final txnAsync = ref.watch(transactionDetailProvider(widget.transactionId));
 
     return Scaffold(
@@ -143,7 +145,7 @@ class _ConsignmentSettlementScreenState
             children: [
               IconButton(
                 onPressed: () => context.pop(),
-                icon: const Icon(Icons.arrow_back, size: 26, color: AppColors.primary),
+                icon: Icon(Icons.arrow_back, size: 26, color: AppColors.primary),
                 tooltip: 'Back',
               ),
               const SizedBox(width: 4),
@@ -180,10 +182,10 @@ class _ConsignmentSettlementScreenState
                   IconButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No new escrow alerts.')),
+                        SnackBar(content: Text('No new escrow alerts.')),
                       );
                     },
-                    icon: const Icon(Icons.notifications_outlined,
+                    icon: Icon(Icons.notifications_outlined,
                         size: 24, color: AppColors.onSurfaceVariant),
                   ),
                   Positioned(
@@ -214,7 +216,7 @@ class _ConsignmentSettlementScreenState
                         width: 2,
                       ),
                     ),
-                    child: const Icon(Icons.business, size: 18, color: Colors.white),
+                    child: Icon(Icons.business, size: 18, color: Colors.white),
                   ),
                   Positioned(
                     bottom: 0,
@@ -227,7 +229,7 @@ class _ConsignmentSettlementScreenState
                         shape: BoxShape.circle,
                         border: Border.all(color: Colors.white, width: 1.5),
                       ),
-                      child: const Icon(Icons.check, size: 9, color: Colors.white),
+                      child: Icon(Icons.check, size: 9, color: Colors.white),
                     ),
                   ),
                 ],
@@ -260,7 +262,7 @@ class _ConsignmentSettlementScreenState
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+                Icon(Icons.error_outline, size: 48, color: AppColors.error),
                 const SizedBox(height: 12),
                 Text(
                   'Unable to load transaction #LOT-${widget.transactionId}',
@@ -283,7 +285,7 @@ class _ConsignmentSettlementScreenState
                 ElevatedButton.icon(
                   onPressed: () => ref.invalidate(
                       transactionDetailProvider(widget.transactionId)),
-                  icon: const Icon(Icons.refresh),
+                  icon: Icon(Icons.refresh),
                   label: const Text('Retry'),
                 ),
               ],
@@ -305,28 +307,28 @@ class _ConsignmentSettlementScreenState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // ── 0. Payment Status Test Controller (Genuine Backend Toggle) ───
+            // â”€â”€ 0. Payment Status Test Controller (Genuine Backend Toggle) â”€â”€â”€
             _buildPaymentStatusController(txn),
 
-            // ── 1. Escrow Settlement Status Badge Banner ───────────────────────
+            // â”€â”€ 1. Escrow Settlement Status Badge Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildEscrowBadgeBanner(txn),
 
-            // ── 2. Photographic Verification Thumbnail Strip ──────────────────
+            // â”€â”€ 2. Photographic Verification Thumbnail Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildPhotographicAssayStrip(txn),
 
-            // ── 3. 3-Stage Milestone Settlement Stepper ───────────────────────
+            // â”€â”€ 3. 3-Stage Milestone Settlement Stepper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildMilestonesStepper(txn),
 
-            // ── 4. Core USP: Crate-Level Dispute Resolution Box ───────────────
+            // â”€â”€ 4. Core USP: Crate-Level Dispute Resolution Box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildCrateDisputeBox(txn),
 
-            // ── 5. Official Financial Settlement Summary (Ledger Receipt) ─────
+            // â”€â”€ 5. Official Financial Settlement Summary (Ledger Receipt) â”€â”€â”€â”€â”€
             _buildSettlementLedger(txn),
 
-            // ── 6. Farmer Share Micro-Ledger Breakdown ─────────────────────────
+            // â”€â”€ 6. Farmer Share Micro-Ledger Breakdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildMemberPayoutSplit(txn),
 
-            // ── 7. Sticky Actions & Institutional Compliance Footer ───────────
+            // â”€â”€ 7. Sticky Actions & Institutional Compliance Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
             _buildActionsFooter(txn),
           ],
         ),
@@ -334,7 +336,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 0. Payment Status Interactive Controller ─────────────────────────────────
+  // â”€â”€ 0. Payment Status Interactive Controller â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildPaymentStatusController(TransactionRecord txn) {
     return Container(
@@ -350,7 +352,7 @@ class _ConsignmentSettlementScreenState
         children: [
           Row(
             children: [
-              const Icon(Icons.tune, size: 16, color: AppColors.primary),
+              Icon(Icons.tune, size: 16, color: AppColors.primary),
               const SizedBox(width: 6),
               const Expanded(
                 child: Text(
@@ -416,7 +418,7 @@ class _ConsignmentSettlementScreenState
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isSelected) ...[
-              const Icon(Icons.check, size: 14, color: Colors.white),
+              Icon(Icons.check, size: 14, color: Colors.white),
               const SizedBox(width: 4),
             ],
             Text(
@@ -433,7 +435,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 1. Escrow Settlement Status Badge Banner ─────────────────────────────────
+  // â”€â”€ 1. Escrow Settlement Status Badge Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildEscrowBadgeBanner(TransactionRecord txn) {
     return Padding(
@@ -495,7 +497,7 @@ class _ConsignmentSettlementScreenState
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '${txn.sellerName ?? "Junnar FPO"} → ${txn.buyerName ?? "Sahyadri Agro"}',
+                        '${txn.sellerName ?? "Junnar FPO"} â†’ ${txn.buyerName ?? "Sahyadri Agro"}',
                         style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
@@ -592,7 +594,7 @@ class _ConsignmentSettlementScreenState
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.check_circle,
+            Icon(Icons.check_circle,
                 color: AppColors.secondary, size: 22),
             const SizedBox(width: 10),
             Expanded(
@@ -676,7 +678,7 @@ class _ConsignmentSettlementScreenState
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.error, color: AppColors.error, size: 22),
+            Icon(Icons.error, color: AppColors.error, size: 22),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -748,7 +750,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 2. Photographic Verification Thumbnail Strip ─────────────────────────────
+  // â”€â”€ 2. Photographic Verification Thumbnail Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildPhotographicAssayStrip(TransactionRecord txn) {
     return Padding(
@@ -774,7 +776,7 @@ class _ConsignmentSettlementScreenState
                 width: 52,
                 height: 52,
                 color: Colors.red.shade100,
-                child: const Icon(Icons.inventory_2, color: Colors.red, size: 26),
+                child: Icon(Icons.inventory_2, color: Colors.red, size: 26),
               ),
             ),
             const SizedBox(width: 12),
@@ -828,7 +830,7 @@ class _ConsignmentSettlementScreenState
                 width: 52,
                 height: 52,
                 color: Colors.blueGrey.shade100,
-                child: const Icon(Icons.scale, color: Colors.blueGrey, size: 26),
+                child: Icon(Icons.scale, color: Colors.blueGrey, size: 26),
               ),
             ),
           ],
@@ -837,7 +839,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 3. 3-Stage Milestone Settlement Stepper ─────────────────────────────────
+  // â”€â”€ 3. 3-Stage Milestone Settlement Stepper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildMilestonesStepper(TransactionRecord txn) {
     final milestones = txn.milestones;
@@ -936,7 +938,7 @@ class _ConsignmentSettlementScreenState
               ),
               child: Center(
                 child: isDone
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
+                    ? Icon(Icons.check, size: 16, color: Colors.white)
                     : (isCurrent
                         ? const SizedBox(
                             width: 12,
@@ -1015,7 +1017,7 @@ class _ConsignmentSettlementScreenState
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.qr_code_scanner,
+                        Icon(Icons.qr_code_scanner,
                             size: 13, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Flexible(
@@ -1127,7 +1129,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 4. Core USP: Crate-Level Dispute Resolution Box ─────────────────────────
+  // â”€â”€ 4. Core USP: Crate-Level Dispute Resolution Box â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildCrateDisputeBox(TransactionRecord txn) {
     return Padding(
@@ -1159,7 +1161,7 @@ class _ConsignmentSettlementScreenState
                       color: Color(0xFF5C2F00),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.gavel, color: Colors.white, size: 18),
+                    child: Icon(Icons.gavel, color: Colors.white, size: 18),
                   ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -1202,7 +1204,7 @@ class _ConsignmentSettlementScreenState
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.notification_important,
+                        Icon(Icons.notification_important,
                             size: 18, color: Color(0xFF7E4200)),
                         const SizedBox(width: 8),
                         Expanded(
@@ -1350,7 +1352,7 @@ class _ConsignmentSettlementScreenState
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.shield,
+                        Icon(Icons.shield,
                             size: 20, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Expanded(
@@ -1386,7 +1388,7 @@ class _ConsignmentSettlementScreenState
                     children: [
                       TextButton.icon(
                         onPressed: () => _showDisputeModal(context, txn),
-                        icon: const Icon(Icons.add_alert, size: 16),
+                        icon: Icon(Icons.add_alert, size: 16),
                         label: const Text('File / Update Grievance'),
                         style: TextButton.styleFrom(
                           foregroundColor: const Color(0xFF7E4200),
@@ -1417,7 +1419,7 @@ class _ConsignmentSettlementScreenState
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.report_problem, size: 14, color: AppColors.error),
+          Icon(Icons.report_problem, size: 14, color: AppColors.error),
           const SizedBox(width: 5),
           Text(
             text,
@@ -1432,7 +1434,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 5. Official Financial Settlement Summary (Ledger Receipt) ───────────────
+  // â”€â”€ 5. Official Financial Settlement Summary (Ledger Receipt) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildSettlementLedger(TransactionRecord txn) {
     final ledger = txn.ledger;
@@ -1696,7 +1698,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 6. Farmer Share Micro-Ledger Breakdown ───────────────────────────────────
+  // â”€â”€ 6. Farmer Share Micro-Ledger Breakdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildMemberPayoutSplit(TransactionRecord txn) {
     final splits = txn.memberSplits;
@@ -1795,7 +1797,7 @@ class _ConsignmentSettlementScreenState
                     ),
                     if (hasWarning) ...[
                       const SizedBox(width: 4),
-                      const Icon(Icons.warning, size: 14, color: AppColors.error),
+                      Icon(Icons.warning, size: 14, color: AppColors.error),
                     ],
                   ],
                 ),
@@ -1881,7 +1883,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── 7. Sticky Actions & Institutional Compliance Footer ─────────────────────
+  // â”€â”€ 7. Sticky Actions & Institutional Compliance Footer â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildActionsFooter(TransactionRecord txn) {
     return Padding(
@@ -1902,7 +1904,7 @@ class _ConsignmentSettlementScreenState
                         color: Colors.white,
                       ),
                     )
-                  : const Icon(Icons.picture_as_pdf, size: 22),
+                  : Icon(Icons.picture_as_pdf, size: 22),
               label: Text(
                 _downloadMessage ??
                     'Download Signed APMC Tax Invoice (PDF)',
@@ -1926,7 +1928,7 @@ class _ConsignmentSettlementScreenState
             height: 56,
             child: OutlinedButton.icon(
               onPressed: _isSharing ? null : _triggerShare,
-              icon: const Icon(Icons.share, size: 22, color: AppColors.secondary),
+              icon: Icon(Icons.share, size: 22, color: AppColors.secondary),
               label: Text(
                 _shareMessage ?? 'Share Settlement Slip via WhatsApp',
                 style: const TextStyle(
@@ -1978,7 +1980,7 @@ class _ConsignmentSettlementScreenState
     );
   }
 
-  // ── Dispute Filing Dialog ───────────────────────────────────────────────────
+  // â”€â”€ Dispute Filing Dialog â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   void _showDisputeModal(BuildContext context, TransactionRecord txn) {
     final reasonController = TextEditingController();
@@ -2024,7 +2026,7 @@ class _ConsignmentSettlementScreenState
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(modalCtx),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(Icons.close),
                     ),
                   ],
                 ),
@@ -2116,7 +2118,7 @@ class _ConsignmentSettlementScreenState
                               if (context.mounted) {
                                 Navigator.pop(modalCtx);
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                  SnackBar(
                                     content: Text(
                                       'Grievance registered. Transaction marked DISPUTED with Crate Isolation active.',
                                     ),

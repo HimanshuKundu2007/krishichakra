@@ -1,16 +1,17 @@
+﻿import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/models.dart';
 import '../../../core/repositories/chatbot_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
-import '../../../shared/widgets/kc_widgets.dart';
+
 
 /// Screen — Krishi Assistant Chatbot
 /// Faithfully reproduces Stitch's chatbot screen:
 ///   - Message bubbles with bot and user styling
 ///   - Voice mic toggle and speech state
-///   - Language indicator (EN, हि, म)
+///   - Language indicator (EN, à¤¹à¤¿, à¤®)
 ///   - Quick suggestion chips carousel
 ///   - Explicit "Rule-Based Prototype" transparency badge (LLM-ready architecture)
 class ChatbotScreen extends ConsumerStatefulWidget {
@@ -95,6 +96,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final chatState = ref.watch(chatStateProvider);
     final currentLang = ref.watch(chatLanguageProvider);
 
@@ -107,16 +109,16 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
       backgroundColor: AppColors.surface,
       body: Column(
         children: [
-          // ── 1. Stitch Header with Prototype Transparency ────────────────────
+          // â”€â”€ 1. Stitch Header with Prototype Transparency â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           _buildHeader(context),
 
-          // ── 2. Language Strip (EN / हि / म) ──────────────────────────────────
+          // â”€â”€ 2. Language Strip (EN / à¤¹à¤¿ / à¤®) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           _buildLanguageStrip(currentLang),
 
-          // ── 3. Rule-Based Prototype Callout Banner ──────────────────────────
+          // â”€â”€ 3. Rule-Based Prototype Callout Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           _buildPrototypeBanner(),
 
-          // ── 4. Chat Messages List ───────────────────────────────────────────
+          // â”€â”€ 4. Chat Messages List â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           Expanded(
             child: ListView.builder(
               controller: _scrollController,
@@ -138,22 +140,22 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
             ),
           ),
 
-          // ── 5. Listening Voice Notification (when mic active) ───────────────
+          // â”€â”€ 5. Listening Voice Notification (when mic active) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           if (_isListening) _buildVoiceListeningBanner(),
 
-          // ── 6. Horizontal Quick Suggestion Chips Carousel ────────────────────
+          // â”€â”€ 6. Horizontal Quick Suggestion Chips Carousel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           _buildSuggestionsBar(),
 
           const SizedBox(height: 6),
 
-          // ── 7. Input Bar ─────────────────────────────────────────────────────
+          // â”€â”€ 7. Input Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
           _buildInputBar(currentLang),
         ],
       ),
     );
   }
 
-  // ── Header Widget ───────────────────────────────────────────────────────────
+  // â”€â”€ Header Widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildHeader(BuildContext context) {
     return Container(
@@ -177,7 +179,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
         children: [
           GestureDetector(
             onTap: () => Navigator.of(context).maybePop(),
-            child: const Icon(Icons.arrow_back, color: Colors.white, size: 24),
+            child: Icon(Icons.arrow_back, color: Colors.white, size: 24),
           ),
           const SizedBox(width: AppSpacing.sm),
           Container(
@@ -187,7 +189,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
               color: AppColors.secondaryContainer,
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.smart_toy,
               color: AppColors.primary,
               size: 22,
@@ -238,7 +240,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
           ),
           IconButton(
             onPressed: _showPrototypeInfoDialog,
-            icon: const Icon(Icons.info_outline, color: Colors.white70, size: 20),
+            icon: Icon(Icons.info_outline, color: Colors.white70, size: 20),
             tooltip: 'Prototype Info',
           ),
           IconButton(
@@ -267,7 +269,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  // ── Language Strip ──────────────────────────────────────────────────────────
+  // â”€â”€ Language Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildLanguageStrip(String currentLang) {
     return Container(
@@ -320,7 +322,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  // ── Rule-Based Prototype Banner ─────────────────────────────────────────────
+  // â”€â”€ Rule-Based Prototype Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildPrototypeBanner() {
     return Container(
@@ -346,7 +348,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  // ── Voice Listening Banner ──────────────────────────────────────────────────
+  // â”€â”€ Voice Listening Banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildVoiceListeningBanner() {
     return Container(
@@ -359,7 +361,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.mic, size: 18, color: AppColors.secondary),
+          Icon(Icons.mic, size: 18, color: AppColors.secondary),
           const SizedBox(width: 8),
           const Expanded(
             child: Text(
@@ -393,7 +395,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  // ── Suggestions Carousel ────────────────────────────────────────────────────
+  // â”€â”€ Suggestions Carousel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildSuggestionsBar() {
     return SizedBox(
@@ -433,7 +435,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
     );
   }
 
-  // ── Input Bar ───────────────────────────────────────────────────────────────
+  // â”€â”€ Input Bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   Widget _buildInputBar(String currentLang) {
     String hintText;
@@ -515,7 +517,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
                   color: AppColors.primary,
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.send_rounded,
                   color: Colors.white,
                   size: 20,
@@ -529,7 +531,7 @@ class _ChatbotScreenState extends ConsumerState<ChatbotScreen> {
   }
 }
 
-// ── Message Bubble Component ──────────────────────────────────────────────────
+// â”€â”€ Message Bubble Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
@@ -542,6 +544,7 @@ class _MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -558,7 +561,7 @@ class _MessageBubble extends StatelessWidget {
                 color: AppColors.primaryContainer,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.smart_toy, color: Colors.white, size: 16),
+              child: Icon(Icons.smart_toy, color: Colors.white, size: 16),
             ),
             const SizedBox(width: 8),
           ],
@@ -610,7 +613,7 @@ class _MessageBubble extends StatelessWidget {
                                 color: AppColors.secondary.withValues(alpha: 0.12),
                                 borderRadius: BorderRadius.circular(4),
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Rule-based prototype',
                                 style: TextStyle(
                                   fontSize: 9.5,
@@ -678,13 +681,14 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
-// ── Typing Indicator Bubble ───────────────────────────────────────────────────
+// â”€â”€ Typing Indicator Bubble â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class _TypingIndicatorBubble extends StatelessWidget {
   const _TypingIndicatorBubble();
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -697,7 +701,7 @@ class _TypingIndicatorBubble extends StatelessWidget {
               color: AppColors.primaryContainer,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.smart_toy, color: Colors.white, size: 16),
+            child: Icon(Icons.smart_toy, color: Colors.white, size: 16),
           ),
           const SizedBox(width: 8),
           Container(

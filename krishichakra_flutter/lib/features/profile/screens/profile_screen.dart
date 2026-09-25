@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/widgets/kc_app_bar.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../../core/providers/language_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
+import '../../../l10n/app_localizations.dart';
 
-/// Profile Screen
-class ProfileScreen extends StatelessWidget {
+/// Profile Screen — fully localized (EN / MR / HI)
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final currentLangLabel = ref.read(languageProvider.notifier).currentLanguageLabel;
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: CustomScrollView(
@@ -19,8 +25,14 @@ class ProfileScreen extends StatelessWidget {
             expandedHeight: AppSpacing.headerHeight,
             backgroundColor: Colors.transparent,
             flexibleSpace: KcAppBar(
-              title: 'My Profile',
-              subtitle: 'Farmer Account',
+              title: l10n?.myProfile ?? 'My Profile',
+              subtitle: l10n?.farmerAccount ?? 'Farmer Account',
+              actions: const [
+                Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: LanguageSelectorButton(),
+                ),
+              ],
             ),
             toolbarHeight: AppSpacing.headerHeight,
             surfaceTintColor: Colors.transparent,
@@ -90,13 +102,11 @@ class ProfileScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color:
-                                        AppColors.secondaryContainer,
-                                    borderRadius:
-                                        BorderRadius.circular(4),
+                                    color: AppColors.secondaryContainer,
+                                    borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
-                                    'VERIFIED FARMER',
+                                    l10n?.verifiedFarmer ?? 'VERIFIED FARMER',
                                     style: TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w800,
@@ -118,58 +128,64 @@ class ProfileScreen extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                        child: _StatTile('Land', '3.5 Acres',
-                            Icons.landscape)),
+                        child: _StatTile(l10n?.landHolding ?? 'Land',
+                            '3.5 Acres', Icons.landscape)),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
-                        child: _StatTile('District', 'Pune',
+                        child: _StatTile(l10n?.district ?? 'District', 'Pune',
                             Icons.location_city)),
                     const SizedBox(width: AppSpacing.xs),
                     Expanded(
                         child: _StatTile(
-                            'State', 'Maharashtra', Icons.map)),
+                            l10n?.state ?? 'State',
+                            'Maharashtra',
+                            Icons.map)),
                   ],
                 ),
                 const SizedBox(height: AppSpacing.md),
                 // Profile fields
-                _SectionLabel('Account Details'),
-                _ProfileRow(Icons.phone, 'Phone Number',
+                _SectionLabel(l10n?.accountDetails ?? 'Account Details'),
+                _ProfileRow(Icons.phone, l10n?.language != null ? 'Phone Number' : 'Phone Number',
                     '+91 98765 43210', true),
-                _ProfileRow(Icons.location_on, 'Village',
+                _ProfileRow(Icons.location_on, l10n?.location ?? 'Village',
                     'Junnar, Pune, Maharashtra', false),
                 _ProfileRow(Icons.account_balance, 'Bank Account',
                     'SBI ••••4892 (Linked)', true),
-                _ProfileRow(Icons.badge, 'Aadhaar KYC',
-                    'Verified ✓', true),
-                _ProfileRow(Icons.language, 'Language Preference',
-                    'Hindi (हिन्दी)', false),
+                _ProfileRow(Icons.badge, 'Aadhaar KYC', 'Verified ✓', true),
+                _ProfileRow(
+                  Icons.language,
+                  l10n?.languagePreference ?? 'Language Preference',
+                  currentLangLabel,
+                  false,
+                  trailing: const Icon(Icons.chevron_right, size: 18, color: AppColors.onSurfaceVariant),
+                  onTap: () => _showLanguageModal(context, ref),
+                ),
                 const SizedBox(height: AppSpacing.md),
-                _SectionLabel('FPO Membership'),
-                _ProfileRow(Icons.group, 'FPO Name',
-                    'Junnar Shetkari FPO', true),
-                _ProfileRow(Icons.numbers, 'Member ID',
-                    'JNR-FPO-2024-0034', false),
+                _SectionLabel(l10n?.fpoMembership ?? 'FPO Membership'),
+                _ProfileRow(Icons.group, 'FPO Name', 'Junnar Shetkari FPO', true),
+                _ProfileRow(Icons.numbers, 'Member ID', 'JNR-FPO-2024-0034', false),
                 const SizedBox(height: AppSpacing.md),
                 // Actions
-                _SectionLabel('Account Actions'),
+                _SectionLabel(l10n?.accountActions ?? 'Account Actions'),
                 _ActionTile(
                   icon: Icons.notifications_outlined,
-                  label: 'Price Alert Settings',
+                  label: l10n?.priceAlertSettings ?? 'Price Alert Settings',
                   onTap: () {},
                 ),
                 _ActionTile(
                   icon: Icons.download,
-                  label: 'Download Transaction Report',
+                  label: l10n?.downloadTransactionReport ??
+                      'Download Transaction Report',
                   onTap: () {},
                 ),
                 _ActionTile(
                   icon: Icons.support_agent,
-                  label: 'Contact Kisan Advisor',
+                  label: l10n?.contactKisanAdvisor ?? 'Contact Kisan Advisor',
                   onTap: () {},
                 ),
                 _ActionTile(
                   icon: Icons.logout,
-                  label: 'Logout',
+                  label: l10n?.logout ?? 'Logout',
                   onTap: () {},
                   isDestructive: true,
                 ),
@@ -178,6 +194,86 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showLanguageModal(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final currentLocale = ref.read(languageProvider);
+    final notifier = ref.read(languageProvider.notifier);
+
+    final languages = [
+      (const Locale('en'), '🌐', 'English', 'English'),
+      (const Locale('hi'), '🌐', 'हिन्दी', 'Hindi'),
+      (const Locale('mr'), '🌐', 'मराठी', 'Marathi'),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.surfaceContainerLowest,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.md, horizontal: AppSpacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n?.selectLanguage ?? 'Select Language',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 20),
+                    onPressed: () => Navigator.pop(ctx),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.sm),
+              ...languages.map((lang) {
+                final isSelected = lang.$1.languageCode == currentLocale.languageCode;
+                return ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  tileColor: isSelected ? AppColors.secondaryContainer.withOpacity(0.4) : Colors.transparent,
+                  leading: Text(lang.$2, style: const TextStyle(fontSize: 22)),
+                  title: Text(
+                    lang.$3,
+                    style: TextStyle(
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected ? AppColors.primary : AppColors.onSurface,
+                    ),
+                  ),
+                  subtitle: Text(
+                    lang.$4,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isSelected ? AppColors.primary : AppColors.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: isSelected
+                      ? const Icon(Icons.check_circle, color: AppColors.primary)
+                      : null,
+                  onTap: () {
+                    notifier.setLocale(lang.$1);
+                    Navigator.pop(ctx);
+                  },
+                );
+              }),
+              const SizedBox(height: AppSpacing.sm),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -208,8 +304,8 @@ class _StatTile extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                   color: AppColors.onSurface)),
           Text(label,
-              style: TextStyle(
-                  fontSize: 10, color: AppColors.onSurfaceVariant)),
+              style:
+                  TextStyle(fontSize: 10, color: AppColors.onSurfaceVariant)),
         ],
       ),
     );
@@ -238,15 +334,24 @@ class _SectionLabel extends StatelessWidget {
 }
 
 class _ProfileRow extends StatelessWidget {
-  const _ProfileRow(this.icon, this.label, this.value, this.verified);
+  const _ProfileRow(
+    this.icon,
+    this.label,
+    this.value,
+    this.verified, {
+    this.onTap,
+    this.trailing,
+  });
   final IconData icon;
   final String label;
   final String value;
   final bool verified;
+  final VoidCallback? onTap;
+  final Widget? trailing;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final rowContent = Container(
       margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.md, vertical: 12),
@@ -275,9 +380,19 @@ class _ProfileRow extends StatelessWidget {
           ),
           if (verified)
             Icon(Icons.verified, size: 16, color: AppColors.secondary),
+          if (trailing != null) trailing!,
         ],
       ),
     );
+
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: rowContent,
+      );
+    }
+    return rowContent;
   }
 }
 
@@ -318,7 +433,8 @@ class _ActionTile extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isDestructive ? color : AppColors.onSurface)),
+                      color:
+                          isDestructive ? color : AppColors.onSurface)),
             ),
             Icon(Icons.chevron_right,
                 size: 18, color: AppColors.onSurfaceVariant),

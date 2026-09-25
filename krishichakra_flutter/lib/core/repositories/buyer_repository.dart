@@ -16,6 +16,12 @@ final buyerMatchesProvider =
   return ref.watch(buyerRepositoryProvider).fetchMatches(lotId);
 });
 
+/// Fetches all demo buyers from GET /api/buyers with optional query filters.
+final allBuyersProvider =
+    FutureProvider.family<List<Buyer>, Map<String, dynamic>>((ref, filters) {
+  return ref.watch(buyerRepositoryProvider).fetchBuyers(filters);
+});
+
 /// Tracks offer submission state per [OfferParams].
 final offerSubmitProvider = NotifierProvider.autoDispose
     .family<OfferSubmitNotifier, OfferSubmitState, OfferParams>(
@@ -109,6 +115,23 @@ class BuyerRepository {
     if (data is List) {
       return data
           .map((item) => BuyerMatch.fromJson(item as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
+
+  /// GET /api/buyers
+  /// Returns all demo buyers filtered by commodity, location, grade, etc.
+  Future<List<Buyer>> fetchBuyers([Map<String, dynamic>? queryParams]) async {
+    final response = await _apiClient.get<dynamic>(
+      ApiEndpoints.buyers,
+      queryParameters: queryParams,
+    );
+    final data = response.data;
+    if (data == null) return [];
+    if (data is List) {
+      return data
+          .map((item) => Buyer.fromJson(item as Map<String, dynamic>))
           .toList();
     }
     return [];

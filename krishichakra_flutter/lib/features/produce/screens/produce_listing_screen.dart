@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/kc_app_bar.dart';
 import '../../../shared/widgets/kc_widgets.dart';
 
-// ─── Screen entry point ────────────────────────────────────────────────────────
+// â”€â”€â”€ Screen entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 /// Screen: List Your Harvest — Produce Lot & AI Grading
 /// Faithful to the Stitch design (krishichakra_produce_listing_ai_grading).
@@ -28,7 +29,7 @@ class ProduceListingScreen extends ConsumerStatefulWidget {
 
 class _ProduceListingScreenState
     extends ConsumerState<ProduceListingScreen> {
-  // ── Form state ────────────────────────────────────────────────────────────
+  // â”€â”€ Form state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   String _commodity = 'Onion';
   String _variety = 'Nasik Red';
   double _quantity = 20.0;
@@ -37,25 +38,25 @@ class _ProduceListingScreenState
   bool _isSubmitting = false;
   String? _errorMessage;
 
-  // ── Camera / image state ──────────────────────────────────────────────────
+  // â”€â”€ Camera / image state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   XFile? _imageFile;
   String? _imageBase64;
   bool _isGrading = false;
   ProduceGradeResult? _gradeResult;
 
-  // ── Additional options state ──────────────────────────────────────────────
+  // â”€â”€ Additional options state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   double _basePricePerQ = 2200.0;
   bool _enableQrTraceability = true;
   bool _enableFpoPool = false;
 
   final ImagePicker _picker = ImagePicker();
 
-  // ── Computed values ───────────────────────────────────────────────────────
-  int get _crateCount => (_quantity * 2).round(); // 1Q ≈ 2 crates of 50kg
+  // â”€â”€ Computed values â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  int get _crateCount => (_quantity * 2).round(); // 1Q â‰ˆ 2 crates of 50kg
   double get _estimatedGrossValue =>
       _quantity * _basePricePerQ * (_enableFpoPool ? 1.068 : 1.0);
 
-  // ── Image pick ────────────────────────────────────────────────────────────
+  // â”€â”€ Image pick â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _pickImage(ImageSource source) async {
     try {
       final file = await _picker.pickImage(source: source, imageQuality: 75);
@@ -113,18 +114,18 @@ class _ProduceListingScreenState
     }
   }
 
-  // ── Submit lot ────────────────────────────────────────────────────────────
+  // â”€â”€ Submit lot â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   Future<void> _submitLot() async {
     if (_commodity.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a crop/commodity name.')),
+        SnackBar(content: Text('Please enter a crop/commodity name.')),
       );
       return;
     }
 
     if (_quantity <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please specify a positive lot quantity.')),
+        SnackBar(content: Text('Please specify a positive lot quantity.')),
       );
       return;
     }
@@ -173,7 +174,7 @@ class _ProduceListingScreenState
     }
   }
 
-  // ── Quantity stepper ──────────────────────────────────────────────────────
+  // â”€â”€ Quantity stepper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   void _incrementQty() =>
       setState(() => _quantity = (_quantity + 5).clamp(1, 500));
   void _decrementQty() =>
@@ -181,11 +182,13 @@ class _ProduceListingScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
+            automaticallyImplyLeading: false,
             floating: false,
             pinned: true,
             expandedHeight: AppSpacing.headerHeight,
@@ -211,22 +214,25 @@ class _ProduceListingScreenState
                 _StepBar(current: 0),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── Camera / image upload card ──────────────────────────────
+                // â”€â”€ Camera / image upload card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _CameraCard(
                   imageFile: _imageFile,
+                  imageBase64: _imageBase64,
                   isGrading: _isGrading,
                   gradeResult: _gradeResult,
                   onTapCamera: () => _showImageSourceSheet(context),
+                  onRetake: () => _pickImage(ImageSource.camera),
+                  onChange: () => _showImageSourceSheet(context),
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── Grading result banner (only after grading) ──────────────
+                // â”€â”€ Grading result banner (only after grading) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 if (_gradeResult != null) ...[
                   _GradingResultBanner(result: _gradeResult!),
                   const SizedBox(height: AppSpacing.md),
                 ],
 
-                // ── Voice search bar ────────────────────────────────────────
+                // â”€â”€ Voice search bar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 VoiceSearchBar(
                   hint: 'Say: "20 quintals Red Onion Grade A, Junnar"',
                   isListening: _isListening,
@@ -235,7 +241,7 @@ class _ProduceListingScreenState
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── Error banner ────────────────────────────────────────────
+                // â”€â”€ Error banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 if (_errorMessage != null) ...[
                   _ErrorBanner(
                     message: _errorMessage!,
@@ -244,7 +250,7 @@ class _ProduceListingScreenState
                   const SizedBox(height: AppSpacing.md),
                 ],
 
-                // ── Crop details form ───────────────────────────────────────
+                // â”€â”€ Crop details form â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _CropDetailsCard(
                   commodity: _commodity,
                   variety: _variety,
@@ -259,7 +265,7 @@ class _ProduceListingScreenState
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── Base price & estimated gross ────────────────────────────
+                // â”€â”€ Base price & estimated gross â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _PriceEstimateCard(
                   basePricePerQ: _basePricePerQ,
                   quantity: _quantity,
@@ -270,7 +276,7 @@ class _ProduceListingScreenState
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── Crate QR traceability card ──────────────────────────────
+                // â”€â”€ Crate QR traceability card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _QrTraceabilityCard(
                   enabled: _enableQrTraceability,
                   crateCount: _crateCount,
@@ -279,7 +285,7 @@ class _ProduceListingScreenState
                 ),
                 const SizedBox(height: AppSpacing.md),
 
-                // ── FPO bulk pooling ────────────────────────────────────────
+                // â”€â”€ FPO bulk pooling â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _FpoPoolCard(
                   enabled: _enableFpoPool,
                   onToggle: (v) =>
@@ -298,7 +304,7 @@ class _ProduceListingScreenState
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.error_outline,
+                        Icon(Icons.error_outline,
                             color: AppColors.error, size: 20),
                         const SizedBox(width: 8),
                         Expanded(
@@ -316,7 +322,7 @@ class _ProduceListingScreenState
                   ),
                 ],
 
-                // ── Publish button ──────────────────────────────────────────
+                // â”€â”€ Publish button â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
                 _PublishButton(
                   isSubmitting: _isSubmitting,
                   onPressed: _submitLot,
@@ -340,7 +346,7 @@ class _ProduceListingScreenState
         child: Wrap(
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt_outlined,
+              leading: Icon(Icons.camera_alt_outlined,
                   color: AppColors.primary),
               title: const Text('Take Photo with Camera'),
               onTap: () {
@@ -349,7 +355,7 @@ class _ProduceListingScreenState
               },
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_outlined,
+              leading: Icon(Icons.photo_library_outlined,
                   color: AppColors.secondary),
               title: const Text('Choose from Gallery'),
               onTap: () {
@@ -359,7 +365,7 @@ class _ProduceListingScreenState
             ),
             // Quick demo grading without an image
             ListTile(
-              leading: const Icon(Icons.science_outlined,
+              leading: Icon(Icons.science_outlined,
                   color: AppColors.tertiary),
               title: const Text('Run Inspection (Demo — no photo)'),
               subtitle: const Text('Integration boundary prototype'),
@@ -376,9 +382,9 @@ class _ProduceListingScreenState
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Step bar
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _StepBar extends StatelessWidget {
   const _StepBar({required this.current});
   final int current;
@@ -387,6 +393,7 @@ class _StepBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
       child: Row(
@@ -430,100 +437,205 @@ class _StepBar extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Camera / image upload card with scanning grid overlay
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _CameraCard extends StatelessWidget {
   const _CameraCard({
     required this.imageFile,
+    this.imageBase64,
     required this.isGrading,
     required this.gradeResult,
     required this.onTapCamera,
+    required this.onRetake,
+    required this.onChange,
   });
 
   final XFile? imageFile;
+  final String? imageBase64;
   final bool isGrading;
   final ProduceGradeResult? gradeResult;
   final VoidCallback onTapCamera;
+  final VoidCallback onRetake;
+  final VoidCallback onChange;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTapCamera,
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-          color: AppColors.surfaceContainerLow,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isGrading
-                ? AppColors.primary
-                : AppColors.outlineVariant,
-            width: isGrading ? 2 : 1.5,
-          ),
+    final l10n = AppLocalizations.of(context)!;
+    final hasImage = imageBase64 != null && imageBase64!.isNotEmpty;
+
+    return Container(
+      height: 220,
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isGrading
+              ? AppColors.primary
+              : (hasImage ? AppColors.secondary : AppColors.outlineVariant),
+          width: isGrading ? 2 : 1.5,
         ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            // Background: image preview or placeholder
-            if (imageFile != null)
-              Positioned.fill(
-                child: Image.network(
-                  imageFile!.path,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _CameraPlaceholder(
-                    isGrading: isGrading,
-                  ),
-                ),
-              )
-            else
-              _CameraPlaceholder(isGrading: isGrading),
-
-            // Scanning grid overlay when grading
-            if (isGrading) const _ScanGridOverlay(),
-
-            // Bounding markers overlay (from grading result)
-            if (gradeResult != null && gradeResult!.detectedMarkers.isNotEmpty)
-              _MarkersOverlay(markers: gradeResult!.detectedMarkers),
-
-            // Grading spinner in corner
-            if (isGrading)
-              Positioned(
-                top: 10,
-                right: 10,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.9),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: 10,
-                        height: 10,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 1.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                      SizedBox(width: 6),
-                      Text(
-                        'Inspecting…',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          // Background: image preview or placeholder
+          if (hasImage)
+            Positioned.fill(
+              child: Image.memory(
+                base64Decode(imageBase64!),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => _CameraPlaceholder(
+                  isGrading: isGrading,
+                  onTap: onTapCamera,
                 ),
               ),
+            )
+          else
+            Positioned.fill(
+              child: _CameraPlaceholder(
+                isGrading: isGrading,
+                onTap: onTapCamera,
+              ),
+            ),
 
-            // Camera icon tap hint in bottom-right
+          // Scanning grid overlay when grading
+          if (isGrading) const _ScanGridOverlay(),
+
+          // Bounding markers overlay (from grading result)
+          if (gradeResult != null && gradeResult!.detectedMarkers.isNotEmpty)
+            _MarkersOverlay(markers: gradeResult!.detectedMarkers),
+
+          // Uploaded status badge
+          if (hasImage && !isGrading)
+            Positioned(
+              top: 10,
+              left: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ],
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.check_circle_rounded,
+                        color: Colors.white, size: 14),
+                    SizedBox(width: 5),
+                    Text(
+                      '✓ Photo uploaded',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Grading spinner in corner
+          if (isGrading)
+            Positioned(
+              top: 10,
+              right: 10,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.95),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 12,
+                      height: 12,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      'AI Quality Check — Prototype',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Action buttons when photo is uploaded
+          if (hasImage)
+            Positioned(
+              bottom: 8,
+              left: 10,
+              right: 10,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 36,
+                      child: ElevatedButton.icon(
+                        onPressed: onRetake,
+                        icon: const Icon(Icons.camera_alt_outlined, size: 14),
+                        label: const Text(
+                          'Retake Photo',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.black.withValues(alpha: 0.7),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: SizedBox(
+                      height: 36,
+                      child: ElevatedButton.icon(
+                        onPressed: onChange,
+                        icon: const Icon(Icons.photo_library_outlined, size: 14),
+                        label: const Text(
+                          'Change Photo',
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryContainer.withValues(alpha: 0.95),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.zero,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else
+            // Tap hint button
             Positioned(
               bottom: 10,
               right: 10,
@@ -540,60 +652,67 @@ class _CameraCard extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
 class _CameraPlaceholder extends StatelessWidget {
-  const _CameraPlaceholder({required this.isGrading});
+  const _CameraPlaceholder({
+    required this.isGrading,
+    this.onTap,
+  });
+
   final bool isGrading;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: isGrading
-                  ? AppColors.primaryFixed.withValues(alpha: 0.3)
-                  : AppColors.surfaceContainerHigh,
-              shape: BoxShape.circle,
+    return InkWell(
+      onTap: onTap,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: isGrading
+                    ? AppColors.primaryFixed.withValues(alpha: 0.3)
+                    : AppColors.surfaceContainerHigh,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isGrading ? Icons.science_outlined : Icons.camera_alt_outlined,
+                size: 28,
+                color: AppColors.primary,
+              ),
             ),
-            child: Icon(
-              isGrading ? Icons.science_outlined : Icons.camera_alt_outlined,
-              size: 28,
-              color: AppColors.primary,
+            const SizedBox(height: 10),
+            Text(
+              isGrading
+                  ? 'AI Quality Check — Prototype'
+                  : 'Take or Upload Produce Photo',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w700,
+                color: AppColors.onSurface,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            isGrading
-                ? 'Running Inspection Prototype…'
-                : 'Tap to Take / Upload Produce Photo',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: AppColors.onSurface,
+            const SizedBox(height: 4),
+            Text(
+              isGrading
+                  ? 'Analyzing produce image features…'
+                  : 'Camera or gallery — checks produce quality',
+              style: const TextStyle(
+                fontSize: 11,
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            isGrading
-                ? 'Integration boundary prototype'
-                : 'Camera or gallery — triggers automated inspection',
-            style: const TextStyle(
-              fontSize: 11,
-              color: AppColors.onSurfaceVariant,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -604,6 +723,7 @@ class _ScanGridOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Positioned.fill(
       child: CustomPaint(painter: _GridPainter()),
     );
@@ -674,6 +794,7 @@ class _MarkersOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Positioned.fill(
       child: LayoutBuilder(
         builder: (_, constraints) {
@@ -709,15 +830,16 @@ class _MarkersOverlay extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Grading result banner
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _GradingResultBanner extends StatelessWidget {
   const _GradingResultBanner({required this.result});
   final ProduceGradeResult result;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isUnsupported = result.status == 'model_not_available';
 
     return Container(
@@ -764,17 +886,17 @@ class _GradingResultBanner extends StatelessWidget {
                     children: [
                       Text(
                         isUnsupported
-                            ? 'Crop Not Yet Supported'
-                            : 'Automated Inspection Prototype: Grade ${result.grade ?? "A"}',
+                            ? 'Manual Quality Selection'
+                            : 'Produce Quality Check: Grade ${result.grade ?? "A"}',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: AppColors.onSurface,
                         ),
                       ),
-                      Text(
-                        'Integration Boundary Prototype • Not AI Certified',
-                        style: const TextStyle(
+                      const Text(
+                        'AI Quality Check — Prototype',
+                        style: TextStyle(
                           fontSize: 10,
                           color: AppColors.onSurfaceVariant,
                         ),
@@ -842,7 +964,7 @@ class _GradingResultBanner extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
+                Icon(
                   Icons.info_outline,
                   size: 13,
                   color: AppColors.onSurfaceVariant,
@@ -882,6 +1004,7 @@ class _MetricPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Expanded(
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
@@ -914,9 +1037,9 @@ class _MetricPill extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Error banner
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _ErrorBanner extends StatelessWidget {
   const _ErrorBanner({required this.message, required this.onDismiss});
   final String message;
@@ -924,6 +1047,7 @@ class _ErrorBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -932,7 +1056,7 @@ class _ErrorBanner extends StatelessWidget {
       ),
       child: Row(
         children: [
-          const Icon(Icons.error_outline,
+          Icon(Icons.error_outline,
               color: AppColors.onErrorContainer, size: 20),
           const SizedBox(width: 10),
           Expanded(
@@ -945,7 +1069,7 @@ class _ErrorBanner extends StatelessWidget {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.close,
+            icon: Icon(Icons.close,
                 size: 16, color: AppColors.onErrorContainer),
             onPressed: onDismiss,
           ),
@@ -955,9 +1079,9 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Crop details card
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _CropDetailsCard extends StatelessWidget {
   const _CropDetailsCard({
     required this.commodity,
@@ -985,6 +1109,7 @@ class _CropDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1101,6 +1226,7 @@ class _StepperBtn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -1118,9 +1244,9 @@ class _StepperBtn extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Price estimate card
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _PriceEstimateCard extends StatelessWidget {
   const _PriceEstimateCard({
     required this.basePricePerQ,
@@ -1138,6 +1264,7 @@ class _PriceEstimateCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1171,7 +1298,7 @@ class _PriceEstimateCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '₹${basePricePerQ.round()}/Q × ${quantity.round()} Q',
+                '₹${basePricePerQ.round()}/Q Ã— ${quantity.round()} Q',
                 style: const TextStyle(
                   fontSize: 12,
                   color: AppColors.onSurfaceVariant,
@@ -1185,7 +1312,7 @@ class _PriceEstimateCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  '≈ ₹${estimatedGross.toStringAsFixed(0)}',
+                  'â‰ˆ ₹${estimatedGross.toStringAsFixed(0)}',
                   style: const TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w800,
@@ -1199,7 +1326,7 @@ class _PriceEstimateCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                const Icon(Icons.trending_up,
+                Icon(Icons.trending_up,
                     size: 14, color: AppColors.secondary),
                 const SizedBox(width: 5),
                 const Text(
@@ -1216,7 +1343,7 @@ class _PriceEstimateCard extends StatelessWidget {
           const SizedBox(height: 4),
           Row(
             children: [
-              const Icon(Icons.info_outline,
+              Icon(Icons.info_outline,
                   size: 12, color: AppColors.onSurfaceVariant),
               const SizedBox(width: 4),
               const Expanded(
@@ -1237,9 +1364,9 @@ class _PriceEstimateCard extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Crate QR traceability card
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _QrTraceabilityCard extends StatelessWidget {
   const _QrTraceabilityCard({
     required this.enabled,
@@ -1253,7 +1380,8 @@ class _QrTraceabilityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final previewCrates = ['#C-01', '#C-02', '#C-03', '…#C-${crateCount.toString().padLeft(2, "0")}'];
+    final l10n = AppLocalizations.of(context)!;
+    final previewCrates = ['#C-01', '#C-02', '#C-03', 'â€¦#C-${crateCount.toString().padLeft(2, "0")}'];
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1266,7 +1394,7 @@ class _QrTraceabilityCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.qr_code_2_outlined,
+              Icon(Icons.qr_code_2_outlined,
                   color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               const Expanded(
@@ -1282,7 +1410,7 @@ class _QrTraceabilityCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'Serialized Crate QR Codes · Dispute Shield',
+                      'Serialized Crate QR Codes Â· Dispute Shield',
                       style: TextStyle(
                         fontSize: 11,
                         color: AppColors.onSurfaceVariant,
@@ -1317,7 +1445,7 @@ class _QrTraceabilityCard extends StatelessWidget {
                     ),
                     child: Column(
                       children: [
-                        const Icon(Icons.qr_code,
+                        Icon(Icons.qr_code,
                             color: AppColors.primary, size: 28),
                         const SizedBox(height: 2),
                         Text(
@@ -1337,7 +1465,7 @@ class _QrTraceabilityCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.shield_outlined,
+                Icon(Icons.shield_outlined,
                     size: 13, color: AppColors.secondary),
                 const SizedBox(width: 5),
                 const Expanded(
@@ -1358,9 +1486,9 @@ class _QrTraceabilityCard extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // FPO bulk pooling card
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _FpoPoolCard extends StatelessWidget {
   const _FpoPoolCard({required this.enabled, required this.onToggle});
   final bool enabled;
@@ -1368,6 +1496,7 @@ class _FpoPoolCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -1438,9 +1567,9 @@ class _FpoPoolCard extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Publish button
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _PublishButton extends StatelessWidget {
   const _PublishButton({
     required this.isSubmitting,
@@ -1452,6 +1581,7 @@ class _PublishButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
@@ -1465,10 +1595,10 @@ class _PublishButton extends StatelessWidget {
                   color: Colors.white,
                 ),
               )
-            : const Icon(Icons.people_alt_outlined, size: 20),
+            : Icon(Icons.people_alt_outlined, size: 20),
         label: Text(
           isSubmitting
-              ? 'Publishing Lot on Server…'
+              ? 'Publishing Lot on Serverâ€¦'
               : 'Publish Lot & Receive Buyer Bids',
           style: const TextStyle(fontWeight: FontWeight.w700),
         ),
@@ -1486,15 +1616,16 @@ class _PublishButton extends StatelessWidget {
   }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Field label helper
-// ──────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 class _FieldLabel extends StatelessWidget {
   const _FieldLabel(this.text);
   final String text;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(

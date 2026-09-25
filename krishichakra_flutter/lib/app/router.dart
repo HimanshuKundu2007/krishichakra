@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../features/auth/screens/auth_screen.dart';
@@ -72,7 +71,9 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: AppRoutes.markets,
-                builder: (ctx, state) => const LiveMandiRatesScreen(),
+                builder: (ctx, state) => LiveMandiRatesScreen(
+                  initialCommodity: state.uri.queryParameters['commodity'],
+                ),
                 routes: [
                   GoRoute(
                     path: 'detail',

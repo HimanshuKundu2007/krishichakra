@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/models.dart';
@@ -35,6 +36,7 @@ class _StorageBookingScreenState extends ConsumerState<StorageBookingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final storageAsync = ref.watch(storageOptionsProvider);
 
     return Scaffold(
@@ -48,6 +50,7 @@ class _StorageBookingScreenState extends ConsumerState<StorageBookingScreen> {
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               floating: false,
               pinned: true,
               expandedHeight: AppSpacing.headerHeight,
@@ -58,7 +61,7 @@ class _StorageBookingScreenState extends ConsumerState<StorageBookingScreen> {
                 showBack: true,
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.refresh),
+                    icon: Icon(Icons.refresh),
                     tooltip: 'Refresh storage facilities',
                     onPressed: () => ref.invalidate(storageOptionsProvider),
                   ),
@@ -121,7 +124,7 @@ class _StorageBookingScreenState extends ConsumerState<StorageBookingScreen> {
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.warehouse,
+                child: Icon(Icons.warehouse,
                     color: Colors.white, size: 20),
               ),
               const SizedBox(width: 10),

@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 from ..database import get_db
-from ..models import Transaction, Dispute, Buyer, ProduceLot, Farmer
+from ..models import Transaction, Dispute, Buyer, ProduceLot, Farmer, MandiDeal
 from ..schemas import (
     TransactionCreate,
     TransactionOut,
@@ -13,6 +13,8 @@ from ..schemas import (
     SettlementMilestoneOut,
     IsolatedCrateOut,
     MemberSplitOut,
+    MandiDealCreate,
+    MandiDealOut,
 )
 
 router = APIRouter(prefix="/transactions", tags=["Transactions"])
@@ -413,3 +415,34 @@ def create_dispute(data: DisputeCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(dispute_obj)
     return dispute_obj
+
+
+@router.post("/deals", response_model=MandiDealOut)
+def lock_mandi_deal(data: MandiDealCreate, db: Session = Depends(get_db)):
+    """
+    Creates a prototype mandi deal lock record.
+    Status: LOCKED
+    """
+    import uuid
+    deal_num = f"DEAL-{datetime.utcnow().strftime('%y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    deal = MandiDeal(
+        deal_id=deal_num,
+        commodity=data.commodity,
+        quantity=data.quantity,
+        market=data.market,
+        price=data.price,
+        estimated_net_realization=data.estimated_net_realization,
+        status="LOCKED",
+        created_at=datetime.utcnow(),
+    )
+    db.add(deal)
+    db.commit()
+    db.refresh(deal)
+    return deal
+
+
+@router.get("/deals", response_model=list[MandiDealOut])
+def list_mandi_deals(limit: int = 50, db: Session = Depends(get_db)):
+    """Returns list of locked mandi deals."""
+    return db.query(MandiDeal).order_by(desc(MandiDeal.created_at)).limit(limit).all()
+

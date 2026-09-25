@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -67,6 +68,7 @@ class _TransactionDetailScreenState
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               floating: false,
               pinned: true,
               expandedHeight: AppSpacing.headerHeight,
@@ -77,7 +79,7 @@ class _TransactionDetailScreenState
                 showBack: true,
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.refresh),
+                    icon: Icon(Icons.refresh),
                     tooltip: 'Refresh Transaction',
                     onPressed: () => ref.invalidate(
                       transactionDetailProvider(widget.transactionId),
@@ -120,6 +122,7 @@ class _TransactionDetailScreenState
   }
 
   Widget _buildBody(BuildContext context, TransactionRecord txn) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -137,7 +140,7 @@ class _TransactionDetailScreenState
             children: [
               Row(
                 children: [
-                  const Icon(Icons.tune, size: 16, color: AppColors.primary),
+                  Icon(Icons.tune, size: 16, color: AppColors.primary),
                   const SizedBox(width: 6),
                   const Expanded(
                     child: Text(
@@ -211,7 +214,7 @@ class _TransactionDetailScreenState
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Payment Status',
+                          l10n.paymentStatus,
                           style: TextStyle(
                             fontSize: 12,
                             color: txn.isFailed
@@ -292,7 +295,7 @@ class _TransactionDetailScreenState
           child: ElevatedButton.icon(
             onPressed: () =>
                 context.push('/transactions/${widget.transactionId}/settlement'),
-            icon: const Icon(Icons.receipt_long, size: 20),
+            icon: Icon(Icons.receipt_long, size: 20),
             label: const Text(
               'View Consignment Settlement & Audit',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
@@ -314,7 +317,7 @@ class _TransactionDetailScreenState
           child: OutlinedButton.icon(
             onPressed: () =>
                 context.push('/transactions/${widget.transactionId}/dispute'),
-            icon: const Icon(Icons.report_problem, size: 20),
+            icon: Icon(Icons.report_problem, size: 20),
             label: const Text(
               'Raise Dispute / Grievance',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),

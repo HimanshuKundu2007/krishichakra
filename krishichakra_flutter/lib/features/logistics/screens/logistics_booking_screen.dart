@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/models.dart';
@@ -36,6 +37,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final optionsAsync = ref.watch(logisticsOptionsProvider);
 
     return Scaffold(
@@ -49,6 +51,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
           physics: const AlwaysScrollableScrollPhysics(),
           slivers: [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               floating: false,
               pinned: true,
               expandedHeight: AppSpacing.headerHeight,
@@ -59,7 +62,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                 showBack: true,
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.refresh),
+                    icon: Icon(Icons.refresh),
                     tooltip: 'Refresh transport options',
                     onPressed: () => ref.invalidate(logisticsOptionsProvider),
                   ),
@@ -119,7 +122,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                 color: AppColors.surfaceContainerHigh,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.local_shipping,
+              child: Icon(Icons.local_shipping,
                   color: AppColors.primary, size: 18),
             ),
             const SizedBox(width: 8),
@@ -136,7 +139,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                   ),
                 ),
                 Text(
-                  '${widget.origin.split(',').first} → ${widget.destination.split(',').first}',
+                  '${widget.origin.split(',').first} â†’ ${widget.destination.split(',').first}',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
@@ -247,7 +250,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
               ),
               Row(
                 children: [
-                  const Icon(Icons.pin_drop,
+                  Icon(Icons.pin_drop,
                       size: 14, color: AppColors.onSurfaceVariant),
                   const SizedBox(width: 2),
                   Text(
@@ -611,7 +614,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.local_offer, size: 14, color: Colors.white),
+                    Icon(Icons.local_offer, size: 14, color: Colors.white),
                     const SizedBox(width: 4),
                     Text(
                       '${discountPct.toStringAsFixed(0)}% Discount (Empty Returning Truck)',
@@ -660,7 +663,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                     color: AppColors.surfaceContainer,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: const Icon(Icons.directions_bus,
+                  child: Icon(Icons.directions_bus,
                       size: 28, color: AppColors.primary),
                 ),
                 const SizedBox(width: 12),
@@ -703,7 +706,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                             const SizedBox(width: 6),
                           ],
                           if (opt.ventilated) ...[
-                            const Icon(Icons.air,
+                            Icon(Icons.air,
                                 size: 12, color: AppColors.secondary),
                             const SizedBox(width: 2),
                             const Text(
@@ -716,7 +719,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                             const SizedBox(width: 6),
                           ],
                           if (opt.gpsActive) ...[
-                            const Icon(Icons.sensors,
+                            Icon(Icons.sensors,
                                 size: 12, color: AppColors.primary),
                             const SizedBox(width: 2),
                             const Text(
@@ -746,7 +749,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                   CircleAvatar(
                     radius: 20,
                     backgroundColor: AppColors.surfaceContainer,
-                    child: const Icon(Icons.person,
+                    child: Icon(Icons.person,
                         color: AppColors.primary, size: 24),
                   ),
                   const SizedBox(width: 10),
@@ -764,13 +767,13 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified,
+                          Icon(Icons.verified,
                               size: 14, color: AppColors.primary),
                         ],
                       ),
                       Row(
                         children: [
-                          const Icon(Icons.star,
+                          Icon(Icons.star,
                               size: 13, color: Color(0xFFE5A100)),
                           const SizedBox(width: 2),
                           Text(
@@ -800,7 +803,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                     ),
                   );
                 },
-                icon: const Icon(Icons.call, size: 16),
+                icon: Icon(Icons.call, size: 16),
                 label: const Text('Call Driver'),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size(90, 40),
@@ -1316,7 +1319,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.verified_user,
+                          Icon(Icons.verified_user,
                               size: 12, color: AppColors.primary),
                           const SizedBox(width: 4),
                           Text(
@@ -1379,7 +1382,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
             onPressed: () {
               setState(() => _copiedGps = true);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
                       'Live GPS Tracking link copied to clipboard! (Ready to share with Buyer / FPO)'),
                 ),
@@ -1421,7 +1424,7 @@ class _LogisticsBookingScreenState extends ConsumerState<LogisticsBookingScreen>
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.shield, color: AppColors.primary, size: 20),
+              Icon(Icons.shield, color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               Expanded(
                 child: Column(

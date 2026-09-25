@@ -34,6 +34,8 @@ class MandiPrice extends Equatable {
   const MandiPrice({
     required this.id,
     required this.commodity,
+    this.commodityName,
+    this.normalizedName,
     required this.variety,
     required this.state,
     required this.district,
@@ -43,14 +45,20 @@ class MandiPrice extends Equatable {
     required this.maxPrice,
     required this.modalPrice,
     required this.unit,
+    this.priceUnit,
     this.arrivalQuantity,
     required this.source,
+    this.sourceRecordId,
     this.sourceUpdatedAt,
     this.ingestedAt,
+    this.priceChangePct,
+    this.previousModalPrice,
   });
 
   final int id;
   final String commodity;
+  final String? commodityName;
+  final String? normalizedName;
   final String variety;
   final String state;
   final String district;
@@ -60,36 +68,324 @@ class MandiPrice extends Equatable {
   final double maxPrice;
   final double modalPrice;
   final String unit;
+  final String? priceUnit;
   final double? arrivalQuantity;
   final String source;
+  final String? sourceRecordId;
   final String? sourceUpdatedAt;
   final String? ingestedAt;
+  final double? priceChangePct;
+  final double? previousModalPrice;
+
+  String get displayName =>
+      (normalizedName != null && normalizedName!.isNotEmpty)
+          ? normalizedName!
+          : (commodityName != null && commodityName!.isNotEmpty)
+              ? commodityName!
+              : commodity;
+
+  String get effectivePriceUnit =>
+      (priceUnit != null && priceUnit!.isNotEmpty) ? priceUnit! : unit;
 
   bool get isLiveGovData =>
       source != 'DEMO_SEED' &&
       (source.contains('Government') || source.contains('AGMARKNET'));
 
-  factory MandiPrice.fromJson(Map<String, dynamic> json) => MandiPrice(
-        id: json['id'] as int? ?? 0,
-        commodity: json['commodity'] as String? ?? '',
-        variety: json['variety'] as String? ?? '',
-        state: json['state'] as String? ?? '',
-        district: json['district'] as String? ?? '',
-        market: json['market'] as String? ?? '',
-        arrivalDate: json['arrival_date'] as String? ?? '',
-        minPrice: (json['min_price'] as num?)?.toDouble() ?? 0.0,
-        maxPrice: (json['max_price'] as num?)?.toDouble() ?? 0.0,
-        modalPrice: (json['modal_price'] as num?)?.toDouble() ?? 0.0,
-        unit: json['unit'] as String? ?? 'Quintal',
-        arrivalQuantity: (json['arrival_quantity'] as num?)?.toDouble(),
-        source: json['source'] as String? ?? 'Government Market Data',
-        sourceUpdatedAt: json['source_updated_at'] as String?,
-        ingestedAt: json['ingested_at'] as String?,
-      );
+  factory MandiPrice.fromJson(Map<String, dynamic> json) {
+    final rawCommodity = json['commodity'] as String? ?? json['commodity_name'] as String? ?? '';
+    final normName = json['normalized_name'] as String?;
+    final pUnit = json['price_unit'] as String? ?? json['unit'] as String? ?? 'Quintal';
+    return MandiPrice(
+      id: json['id'] as int? ?? 0,
+      commodity: rawCommodity,
+      commodityName: json['commodity_name'] as String? ?? rawCommodity,
+      normalizedName: normName,
+      variety: json['variety'] as String? ?? '',
+      state: json['state'] as String? ?? '',
+      district: json['district'] as String? ?? '',
+      market: json['market'] as String? ?? '',
+      arrivalDate: json['arrival_date'] as String? ?? '',
+      minPrice: (json['min_price'] as num?)?.toDouble() ?? 0.0,
+      maxPrice: (json['max_price'] as num?)?.toDouble() ?? 0.0,
+      modalPrice: (json['modal_price'] as num?)?.toDouble() ?? 0.0,
+      unit: pUnit,
+      priceUnit: pUnit,
+      arrivalQuantity: (json['arrival_quantity'] as num?)?.toDouble(),
+      source: json['source'] as String? ?? 'Government Market Data',
+      sourceRecordId: json['source_record_id'] as String?,
+      sourceUpdatedAt: json['source_updated_at'] as String?,
+      ingestedAt: json['ingested_at'] as String?,
+      priceChangePct: (json['price_change_pct'] as num?)?.toDouble(),
+      previousModalPrice: (json['previous_modal_price'] as num?)?.toDouble(),
+    );
+  }
 
   @override
   List<Object?> get props =>
-      [id, commodity, market, arrivalDate, modalPrice, source];
+      [id, commodity, market, arrivalDate, modalPrice, source, normalizedName, priceChangePct, previousModalPrice];
+}
+
+// ─── Mandi History Data Models (7-Day, 30-Day, 1-Year Calendar Records) ──────────
+class MandiHistoryPoint extends Equatable {
+  const MandiHistoryPoint({
+    required this.date,
+    required this.displayDate,
+    required this.commodity,
+    this.variety,
+    this.state,
+    this.district,
+    required this.market,
+    this.minPrice,
+    this.modalPrice,
+    this.maxPrice,
+    this.unit = 'Quintal',
+    this.arrivalQuantity,
+    required this.source,
+    this.sourceName,
+    this.sourceUrl,
+    this.sourceRecordDate,
+    this.sourceUpdatedAt,
+    this.sourcePriority,
+    this.dataQuality = 'missing',
+    this.updatedAt,
+    required this.hasData,
+    required this.status,
+  });
+
+  final String date;
+  final String displayDate;
+  final String commodity;
+  final String? variety;
+  final String? state;
+  final String? district;
+  final String market;
+  final double? minPrice;
+  final double? modalPrice;
+  final double? maxPrice;
+  final String unit;
+  final double? arrivalQuantity;
+  final String source;
+  final String? sourceName;
+  final String? sourceUrl;
+  final String? sourceRecordDate;
+  final String? sourceUpdatedAt;
+  final int? sourcePriority;
+  final String dataQuality; // "government_exact_market", "government_fallback_market", "missing"
+  final String? updatedAt;
+  final bool hasData;
+  final String status;
+
+  factory MandiHistoryPoint.fromJson(Map<String, dynamic> json) {
+    final hasDataVal = json['has_data'] as bool? ?? true;
+    final defaultQuality = hasDataVal ? 'government_exact_market' : 'missing';
+    return MandiHistoryPoint(
+      date: json['date'] as String? ?? '',
+      displayDate: json['display_date'] as String? ?? json['date'] as String? ?? '',
+      commodity: json['commodity'] as String? ?? '',
+      variety: json['variety'] as String?,
+      state: json['state'] as String?,
+      district: json['district'] as String?,
+      market: json['market'] as String? ?? '',
+      minPrice: (json['min_price'] as num?)?.toDouble(),
+      modalPrice: (json['modal_price'] as num?)?.toDouble(),
+      maxPrice: (json['max_price'] as num?)?.toDouble(),
+      unit: json['unit'] as String? ?? 'Quintal',
+      arrivalQuantity: (json['arrival_quantity'] as num?)?.toDouble(),
+      source: json['source'] as String? ?? 'Government Market Data',
+      sourceName: json['source_name'] as String?,
+      sourceUrl: json['source_url'] as String?,
+      sourceRecordDate: json['source_record_date'] as String?,
+      sourceUpdatedAt: json['source_updated_at'] as String?,
+      sourcePriority: (json['source_priority'] as num?)?.toInt(),
+      dataQuality: json['data_quality'] as String? ?? defaultQuality,
+      updatedAt: json['updated_at'] as String?,
+      hasData: hasDataVal,
+      status: json['status'] as String? ?? (!hasDataVal ? 'No market report' : 'Reported'),
+    );
+  }
+
+  @override
+  List<Object?> get props => [date, market, commodity, modalPrice, hasData, status, dataQuality];
+}
+
+class MandiHistorySummary extends Equatable {
+  const MandiHistorySummary({
+    this.latestModal = 0.0,
+    this.periodMin = 0.0,
+    this.periodMax = 0.0,
+    this.avgModal = 0.0,
+    this.recordsCount = 0,
+    this.datesCheckedCount = 0,
+    this.datesWithDataCount = 0,
+    this.missingDatesCount = 0,
+    this.trendPercent,
+  });
+
+  final double latestModal;
+  final double periodMin;
+  final double periodMax;
+  final double avgModal;
+  final int recordsCount;
+  final int datesCheckedCount;
+  final int datesWithDataCount;
+  final int missingDatesCount;
+  final double? trendPercent;
+
+  factory MandiHistorySummary.fromJson(Map<String, dynamic> json) {
+    return MandiHistorySummary(
+      latestModal: (json['latest_modal'] as num?)?.toDouble() ?? 0.0,
+      periodMin: (json['period_min'] as num?)?.toDouble() ?? 0.0,
+      periodMax: (json['period_max'] as num?)?.toDouble() ?? 0.0,
+      avgModal: (json['avg_modal'] as num?)?.toDouble() ?? 0.0,
+      recordsCount: (json['records_count'] as num?)?.toInt() ?? 0,
+      datesCheckedCount: (json['dates_checked_count'] as num?)?.toInt() ?? 0,
+      datesWithDataCount: (json['dates_with_data_count'] as num?)?.toInt() ?? 0,
+      missingDatesCount: (json['missing_dates_count'] as num?)?.toInt() ?? 0,
+      trendPercent: (json['trend_percent'] as num?)?.toDouble(),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        latestModal,
+        periodMin,
+        periodMax,
+        avgModal,
+        recordsCount,
+        datesCheckedCount,
+        datesWithDataCount,
+        missingDatesCount,
+        trendPercent,
+      ];
+}
+
+class MandiDailyHistory extends Equatable {
+  const MandiDailyHistory({
+    required this.commodity,
+    this.normalizedCommodity = '',
+    required this.market,
+    this.state,
+    this.district,
+    required this.source,
+    this.lastUpdated,
+    required this.requestedStartDate,
+    required this.requestedEndDate,
+    required this.datesChecked,
+    required this.datesWithData,
+    required this.missingDates,
+    this.period = '7d',
+    required this.summary,
+    required this.records,
+    this.allCalendarDays = const [],
+    this.fallbackRecords = const [],
+    this.isFallback = false,
+    this.fallbackMarket,
+    this.fallbackDistanceKm,
+  });
+
+  final String commodity;
+  final String normalizedCommodity;
+  final String market;
+  final String? state;
+  final String? district;
+  final String source;
+  final String? lastUpdated;
+  final String requestedStartDate;
+  final String requestedEndDate;
+  final int datesChecked;
+  final int datesWithData;
+  final int missingDates;
+  final String period;
+  final MandiHistorySummary summary;
+  final List<MandiHistoryPoint> records;
+  final List<MandiHistoryPoint> allCalendarDays;
+  final List<MandiHistoryPoint> fallbackRecords;
+  final bool isFallback;
+  final String? fallbackMarket;
+  final double? fallbackDistanceKm;
+
+  double get latestModal => summary.latestModal;
+  double get periodMin => summary.periodMin;
+  double get periodMax => summary.periodMax;
+  double get avgModal => summary.avgModal;
+  int get recordsCount => summary.recordsCount;
+
+  factory MandiDailyHistory.fromJson(Map<String, dynamic> json) {
+    final rawRecs = (json['records'] as List<dynamic>?) ?? [];
+    final rawAllDays = (json['all_calendar_days'] as List<dynamic>?) ?? [];
+    final rawFallback = (json['fallback_records'] as List<dynamic>?) ?? [];
+    final summaryJson = json['summary'] as Map<String, dynamic>? ?? {};
+
+    int datesCheckedVal = 0;
+    if (json['dates_checked'] is int) {
+      datesCheckedVal = json['dates_checked'] as int;
+    } else if (json['dates_checked'] is List) {
+      datesCheckedVal = (json['dates_checked'] as List).length;
+    }
+
+    int datesWithDataVal = 0;
+    if (json['dates_with_data'] is int) {
+      datesWithDataVal = json['dates_with_data'] as int;
+    } else if (json['dates_with_data'] is List) {
+      datesWithDataVal = (json['dates_with_data'] as List).length;
+    }
+
+    int missingDatesVal = 0;
+    if (json['missing_dates'] is int) {
+      missingDatesVal = json['missing_dates'] as int;
+    } else if (json['missing_dates'] is List) {
+      missingDatesVal = (json['missing_dates'] as List).length;
+    }
+
+    final parsedRecords = rawRecs
+        .map((e) => MandiHistoryPoint.fromJson(e as Map<String, dynamic>))
+        .toList();
+    final parsedAllDays = rawAllDays.isNotEmpty
+        ? rawAllDays
+            .map((e) => MandiHistoryPoint.fromJson(e as Map<String, dynamic>))
+            .toList()
+        : parsedRecords;
+    final parsedFallback = rawFallback
+        .map((e) => MandiHistoryPoint.fromJson(e as Map<String, dynamic>))
+        .toList();
+
+    return MandiDailyHistory(
+      commodity: json['commodity'] as String? ?? '',
+      normalizedCommodity: json['normalized_commodity'] as String? ?? '',
+      market: json['market'] as String? ?? '',
+      state: json['state'] as String?,
+      district: json['district'] as String?,
+      source: json['source'] as String? ?? 'Government Market Data',
+      lastUpdated: json['last_updated'] as String?,
+      requestedStartDate: json['requested_start_date'] as String? ?? '',
+      requestedEndDate: json['requested_end_date'] as String? ?? '',
+      datesChecked: datesCheckedVal,
+      datesWithData: datesWithDataVal,
+      missingDates: missingDatesVal,
+      period: json['period'] as String? ?? '7d',
+      summary: MandiHistorySummary.fromJson(summaryJson),
+      records: parsedRecords,
+      allCalendarDays: parsedAllDays,
+      fallbackRecords: parsedFallback,
+      isFallback: json['is_fallback'] as bool? ?? false,
+      fallbackMarket: json['fallback_market'] as String?,
+      fallbackDistanceKm: (json['fallback_distance_km'] as num?)?.toDouble(),
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        commodity,
+        market,
+        period,
+        datesChecked,
+        datesWithData,
+        missingDates,
+        isFallback,
+        fallbackMarket,
+        allCalendarDays.length,
+        fallbackRecords.length,
+      ];
 }
 
 // ─── Mandi Status model ───────────────────────────────────────────────────────
@@ -157,6 +453,143 @@ class MandiStatus extends Equatable {
         isStale,
         message,
       ];
+}
+
+// ─── Mandi Filters Data model ────────────────────────────────────────────────
+class MandiFiltersData extends Equatable {
+  const MandiFiltersData({
+    required this.states,
+    required this.districts,
+    required this.markets,
+    required this.commodities,
+    this.normalizedCommodities = const [],
+    this.commodityIcons = const {},
+    required this.varieties,
+    this.defaultState = 'Maharashtra',
+    this.totalRecords = 0,
+  });
+
+  final List<String> states;
+  final List<String> districts;
+  final List<String> markets;
+  final List<String> commodities;
+  final List<String> normalizedCommodities;
+  final Map<String, String> commodityIcons;
+  final List<String> varieties;
+  final String defaultState;
+  final int totalRecords;
+
+  /// Returns normalized commodities if available, otherwise raw commodities
+  List<String> get availableCommodities =>
+      normalizedCommodities.isNotEmpty ? normalizedCommodities : commodities;
+
+  factory MandiFiltersData.fromJson(Map<String, dynamic> json) {
+    final rawCommodities = (json['commodities'] as List<dynamic>?)
+            ?.map((e) => e.toString().trim())
+            .where((s) => s.isNotEmpty)
+            .toList() ??
+        [];
+    final normCommodities = (json['normalized_commodities'] as List<dynamic>?)
+            ?.map((e) => e.toString().trim())
+            .where((s) => s.isNotEmpty)
+            .toList() ??
+        rawCommodities;
+
+    final iconsMap = <String, String>{};
+    if (json['commodity_icons'] is Map<String, dynamic>) {
+      (json['commodity_icons'] as Map<String, dynamic>).forEach((k, v) {
+        iconsMap[k] = v.toString();
+      });
+    }
+
+    return MandiFiltersData(
+      states: (json['states'] as List<dynamic>?)
+              ?.map((e) => e.toString().trim())
+              .where((s) => s.isNotEmpty)
+              .toList() ??
+          [],
+      districts: (json['districts'] as List<dynamic>?)
+              ?.map((e) => e.toString().trim())
+              .where((s) => s.isNotEmpty)
+              .toList() ??
+          [],
+      markets: (json['markets'] as List<dynamic>?)
+              ?.map((e) => e.toString().trim())
+              .where((s) => s.isNotEmpty)
+              .toList() ??
+          [],
+      commodities: rawCommodities,
+      normalizedCommodities: normCommodities,
+      commodityIcons: iconsMap,
+      varieties: (json['varieties'] as List<dynamic>?)
+              ?.map((e) => e.toString().trim())
+              .where((s) => s.isNotEmpty)
+              .toList() ??
+          [],
+      defaultState: json['default_state'] as String? ?? 'Maharashtra',
+      totalRecords: json['total_records'] as int? ?? 0,
+    );
+  }
+
+  static const empty = MandiFiltersData(
+    states: [],
+    districts: [],
+    markets: [],
+    commodities: [],
+    normalizedCommodities: [],
+    commodityIcons: {},
+    varieties: [],
+  );
+
+  @override
+  List<Object?> get props => [
+        states,
+        districts,
+        markets,
+        commodities,
+        normalizedCommodities,
+        commodityIcons,
+        varieties,
+        defaultState,
+        totalRecords,
+      ];
+}
+
+// ─── Commodity Catalogue Item model ──────────────────────────────────────────
+class CommodityCatalogueItem extends Equatable {
+  const CommodityCatalogueItem({
+    required this.normalizedName,
+    required this.displayName,
+    required this.icon,
+    required this.rawCount,
+    required this.recordCount,
+    required this.varieties,
+    required this.aliases,
+    required this.states,
+  });
+
+  final String normalizedName;
+  final String displayName;
+  final String icon;
+  final int rawCount;
+  final int recordCount;
+  final List<String> varieties;
+  final List<String> aliases;
+  final List<String> states;
+
+  factory CommodityCatalogueItem.fromJson(Map<String, dynamic> json) => CommodityCatalogueItem(
+        normalizedName: json['normalized_name'] as String? ?? '',
+        displayName: json['display_name'] as String? ?? '',
+        icon: json['icon'] as String? ?? '🌱',
+        rawCount: json['raw_count'] as int? ?? 0,
+        recordCount: json['record_count'] as int? ?? 0,
+        varieties: (json['varieties'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+        aliases: (json['aliases'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+        states: (json['states'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? [],
+      );
+
+  @override
+  List<Object?> get props => [normalizedName, displayName, icon, recordCount];
 }
 
 // ─── Farmer model ─────────────────────────────────────────────────────────────
@@ -420,12 +853,23 @@ class Buyer extends Equatable {
     required this.buyerType,
     this.district,
     this.state,
+    this.city,
     required this.verified,
     this.paymentReliability,
     this.demandCommodity,
+    this.varieties,
     this.minQuantity,
     this.maxQuantity,
+    this.acceptedGrade,
     this.qualityRequirements,
+    this.indicativePriceMin,
+    this.indicativePriceMax,
+    this.pickupAvailable = true,
+    this.deliveryAvailable = true,
+    this.paymentTerms,
+    this.verificationStatus,
+    this.contactAvailable = true,
+    this.isDemo = true,
     this.offeredPrice,
   });
 
@@ -434,12 +878,23 @@ class Buyer extends Equatable {
   final String buyerType;
   final String? district;
   final String? state;
+  final String? city;
   final bool verified;
   final double? paymentReliability;
   final String? demandCommodity;
+  final String? varieties;
   final double? minQuantity;
   final double? maxQuantity;
+  final String? acceptedGrade;
   final String? qualityRequirements;
+  final double? indicativePriceMin;
+  final double? indicativePriceMax;
+  final bool pickupAvailable;
+  final bool deliveryAvailable;
+  final String? paymentTerms;
+  final String? verificationStatus;
+  final bool contactAvailable;
+  final bool isDemo;
   final double? offeredPrice;
 
   factory Buyer.fromJson(Map<String, dynamic> json) => Buyer(
@@ -448,12 +903,24 @@ class Buyer extends Equatable {
         buyerType: json['buyer_type'] as String? ?? 'trader',
         district: json['district'] as String?,
         state: json['state'] as String?,
+        city: json['city'] as String?,
         verified: json['verified'] as bool? ?? false,
         paymentReliability: (json['payment_reliability'] as num?)?.toDouble(),
         demandCommodity: json['demand_commodity'] as String?,
+        varieties: json['varieties'] as String?,
         minQuantity: (json['min_quantity'] as num?)?.toDouble(),
         maxQuantity: (json['max_quantity'] as num?)?.toDouble(),
+        acceptedGrade: json['accepted_grade'] as String?,
         qualityRequirements: json['quality_requirements'] as String?,
+        indicativePriceMin: (json['indicative_price_min'] as num?)?.toDouble(),
+        indicativePriceMax: (json['indicative_price_max'] as num?)?.toDouble(),
+        pickupAvailable: json['pickup_available'] as bool? ?? true,
+        deliveryAvailable: json['delivery_available'] as bool? ?? true,
+        paymentTerms: json['payment_terms'] as String? ?? '24 hours via Escrow',
+        verificationStatus:
+            json['verification_status'] as String? ?? 'Demo Verified Buyer',
+        contactAvailable: json['contact_available'] as bool? ?? true,
+        isDemo: json['is_demo'] as bool? ?? true,
         offeredPrice: (json['offered_price'] as num?)?.toDouble(),
       );
 
@@ -508,6 +975,13 @@ class BuyerMatch extends Equatable {
     required this.matchScore,
     required this.reason,
     required this.scoreBreakdown,
+    this.location,
+    this.requiredQuantity,
+    this.acceptedGrade,
+    this.indicativeOffer,
+    this.pickupAvailable = true,
+    this.paymentTerms,
+    this.verificationBadge,
   });
 
   final int buyerId;
@@ -521,6 +995,13 @@ class BuyerMatch extends Equatable {
   final double matchScore;
   final String reason;
   final BuyerMatchScoreBreakdown scoreBreakdown;
+  final String? location;
+  final String? requiredQuantity;
+  final String? acceptedGrade;
+  final String? indicativeOffer;
+  final bool pickupAvailable;
+  final String? paymentTerms;
+  final String? verificationBadge;
 
   bool get isTopBid => matchScore >= 70;
 
@@ -537,6 +1018,13 @@ class BuyerMatch extends Equatable {
         scoreBreakdown: BuyerMatchScoreBreakdown.fromJson(
           json['score_breakdown'] as Map<String, dynamic>? ?? {},
         ),
+        location: json['location'] as String?,
+        requiredQuantity: json['required_quantity'] as String?,
+        acceptedGrade: json['accepted_grade'] as String?,
+        indicativeOffer: json['indicative_offer'] as String?,
+        pickupAvailable: json['pickup_available'] as bool? ?? true,
+        paymentTerms: json['payment_terms'] as String?,
+        verificationBadge: json['verification_badge'] as String?,
       );
 
   @override

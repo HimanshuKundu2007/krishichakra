@@ -27,6 +27,7 @@ class MyLotsScreen extends ConsumerWidget {
         child: CustomScrollView(
           slivers: [
             SliverAppBar(
+              automaticallyImplyLeading: false,
               floating: true,
               snap: true,
               expandedHeight: AppSpacing.headerHeight,

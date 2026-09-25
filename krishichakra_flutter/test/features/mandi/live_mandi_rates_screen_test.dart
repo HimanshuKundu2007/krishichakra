@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:krishichakra/core/models/models.dart';
 import 'package:krishichakra/core/repositories/mandi_repository.dart';
 import 'package:krishichakra/features/mandi/screens/live_mandi_rates_screen.dart';
+import 'package:krishichakra/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('LiveMandiRatesScreen renders search, location filters, price cards, and provenance tags',
@@ -42,6 +43,7 @@ void main() {
       districts: ['Nashik', 'Pune'],
       markets: ['Lasalgaon', 'Junnar'],
       commodities: ['Onion', 'Tomato'],
+      varieties: ['Red', 'Local', 'Hybrid'],
     );
 
     tester.view.physicalSize = const Size(800, 2000);
@@ -54,14 +56,31 @@ void main() {
           mandiStatusProvider.overrideWith((ref) => testStatus),
           filteredMandiPricesProvider((
             commodity: 'onion',
-            state: null,
+            state: 'Maharashtra',
             district: null,
             market: null,
+            variety: null,
             limit: 100,
           )).overrideWith((ref) => testPrices),
+          dynamicMandiFiltersProvider((
+            state: 'Maharashtra',
+            district: null,
+            market: null,
+            commodity: 'onion',
+          )).overrideWith((ref) => const MandiFiltersData(
+                states: ['Maharashtra', 'Gujarat'],
+                districts: ['Nashik', 'Pune'],
+                markets: ['Lasalgaon', 'Junnar'],
+                commodities: ['Onion', 'Tomato'],
+                varieties: ['Red', 'Local', 'Hybrid'],
+                totalRecords: 2,
+              )),
           availableMandiFiltersProvider.overrideWith((ref) => testFilters),
         ],
         child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: Locale('en'),
           home: LiveMandiRatesScreen(),
         ),
       ),
@@ -80,8 +99,10 @@ void main() {
     // Verify Provenance
     expect(find.text('e-NAM Verified'), findsOneWidget);
 
-    // Verify Location filters are present
-    expect(find.text('State: All'), findsOneWidget);
+    // Verify Scope toggle & Location filters are present
+    expect(find.text('Maharashtra (Focus)'), findsOneWidget);
+    expect(find.text('All India (All Mandis)'), findsOneWidget);
+    expect(find.text('State: Maharashtra'), findsOneWidget);
     expect(find.text('District: All'), findsOneWidget);
     expect(find.text('Market: All'), findsOneWidget);
 

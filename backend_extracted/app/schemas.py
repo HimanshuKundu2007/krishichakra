@@ -19,20 +19,109 @@ class FarmerOut(FarmerCreate):
 class MandiPriceOut(BaseModel):
     id: int
     commodity: str
-    variety: str | None
-    state: str | None
-    district: str | None
+    variety: str | None = None
+    state: str | None = None
+    district: str | None = None
     market: str
     arrival_date: date
-    min_price: float | None
-    max_price: float | None
-    modal_price: float | None
-    unit: str
-    arrival_quantity: float | None
+    min_price: float | None = None
+    max_price: float | None = None
+    modal_price: float | None = None
+    unit: str = "Quintal"
+    arrival_quantity: float | None = None
     source: str
-    source_updated_at: datetime | None
+    source_record_id: str | None = None
+    source_updated_at: datetime | None = None
     ingested_at: datetime
-    class Config: from_attributes = True
+    commodity_name: str | None = None
+    normalized_name: str | None = None
+    price_unit: str | None = None
+    price_change_pct: float | None = None
+    previous_modal_price: float | None = None
+
+    class Config:
+        from_attributes = True
+
+class CommodityCatalogueItem(BaseModel):
+    commodity_name: str
+    normalized_name: str
+    category: str | None = "Crops"
+    icon: str = "🌾"
+    available_varieties: list[str] = []
+    record_count: int = 0
+    latest_modal_price: float | None = None
+    min_price: float | None = None
+    max_price: float | None = None
+    price_unit: str = "Quintal"
+    latest_arrival_date: date | None = None
+    states: list[str] = []
+    has_maharashtra_records: bool = False
+
+class MandiFiltersOut(BaseModel):
+    states: list[str]
+    districts: list[str]
+    markets: list[str]
+    commodities: list[str]
+    varieties: list[str]
+    normalized_commodities: list[str] = []
+    commodity_icons: dict[str, str] = {}
+    default_state: str = "Maharashtra"
+    total_records: int
+
+class MandiHistoryPointOut(BaseModel):
+    date: str
+    display_date: str
+    commodity: str
+    variety: str | None = None
+    state: str | None = None
+    district: str | None = None
+    market: str
+    min_price: float | None = None
+    modal_price: float | None = None
+    max_price: float | None = None
+    unit: str = "Quintal"
+    arrival_quantity: float | None = None
+    source: str
+    source_name: str | None = None
+    source_url: str | None = None
+    source_record_date: str | None = None
+    source_updated_at: str | None = None
+    source_priority: int | None = None
+    data_quality: str = "missing"  # "government_exact_market", "government_fallback_market", "missing"
+    updated_at: str | None = None
+    has_data: bool = True
+    status: str = "Reported"
+
+class MandiHistorySummary(BaseModel):
+    latest_modal: float | None = None
+    period_min: float | None = None
+    period_max: float | None = None
+    avg_modal: float | None = None
+    records_count: int = 0
+    dates_checked_count: int = 7
+    dates_with_data_count: int = 0
+    missing_dates_count: int = 7
+
+class MandiHistoryOut(BaseModel):
+    commodity: str
+    normalized_commodity: str
+    market: str
+    state: str | None = None
+    district: str | None = None
+    source: str
+    last_updated: str | None = None
+    requested_start_date: str
+    requested_end_date: str
+    dates_checked: list[str]
+    dates_with_data: list[str]
+    missing_dates: list[str]
+    period: str
+    summary: MandiHistorySummary
+    records: list[MandiHistoryPointOut]
+    all_calendar_days: list[MandiHistoryPointOut]
+    is_fallback: bool = False
+    fallback_market: str | None = None
+    fallback_records: list[MandiHistoryPointOut] = []
 
 class ProduceLotCreate(BaseModel):
     farmer_id: int
@@ -59,6 +148,33 @@ class BuyerCreate(BaseModel):
     quality_requirements: str | None = None
     offered_price: float | None = None
 
+class BuyerOut(BaseModel):
+    id: int
+    name: str
+    buyer_type: str
+    district: str | None = None
+    state: str | None = None
+    city: str | None = None
+    verified: bool = False
+    payment_reliability: float = 0.5
+    demand_commodity: str
+    commodities: list[str] | None = None
+    varieties: str | None = None
+    min_quantity: float = 0
+    max_quantity: float = 1e9
+    accepted_grade: str | None = None
+    quality_requirements: str | None = None
+    indicative_price_min: float | None = None
+    indicative_price_max: float | None = None
+    offered_price: float | None = None
+    pickup_available: bool = True
+    delivery_available: bool = True
+    payment_terms: str | None = "T+1 (24 hrs via KrishiChakra Escrow)"
+    verification_status: str | None = "Demo Verified Buyer"
+    contact_available: bool = True
+    is_demo: bool = True
+    class Config: from_attributes = True
+
 class OfferCreate(BaseModel):
     lot_id: int
     buyer_id: int
@@ -71,6 +187,26 @@ class OfferOut(BaseModel):
     buyer_id: int
     offered_price: float
     quantity_quintal: float
+    class Config: from_attributes = True
+
+class MandiDealCreate(BaseModel):
+    commodity: str
+    quantity: float
+    market: str
+    price: float
+    estimated_net_realization: float
+    status: str = "LOCKED"
+
+class MandiDealOut(BaseModel):
+    id: int
+    deal_id: str
+    commodity: str
+    quantity: float
+    market: str
+    price: float
+    estimated_net_realization: float
+    status: str
+    created_at: datetime
     class Config: from_attributes = True
 
 class BuyerMatchScoreBreakdown(BaseModel):
@@ -95,6 +231,19 @@ class MatchedBuyerOut(BaseModel):
     match_score: float
     reason: str
     score_breakdown: BuyerMatchScoreBreakdown
+    district: str | None = None
+    state: str | None = None
+    city: str | None = None
+    min_quantity: float = 0
+    max_quantity: float = 1e9
+    accepted_grade: str | None = None
+    quality_requirements: str | None = None
+    indicative_price_min: float | None = None
+    indicative_price_max: float | None = None
+    pickup_available: bool = True
+    delivery_available: bool = True
+    payment_terms: str | None = "T+1 (24 hrs via KrishiChakra Escrow)"
+    verification_status: str | None = "Demo Verified Buyer"
 
 class SettlementMilestoneOut(BaseModel):
     step: int

@@ -75,6 +75,7 @@ void main() {
           state: null,
           district: null,
           market: null,
+          variety: null,
           limit: 10,
         )).future,
       );

@@ -6,6 +6,10 @@ import '../../../core/repositories/mandi_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/kc_widgets.dart';
+import '../../../shared/widgets/krishichakra_logo.dart';
+import '../../../shared/widgets/language_selector.dart';
+import '../../../core/providers/language_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Screen 2 — Farmer Home Dashboard
 /// Recreates the Stitch farmer home dashboard exactly:
@@ -48,32 +52,45 @@ class _FarmerHomeScreenState extends ConsumerState<FarmerHomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                const SizedBox(height: AppSpacing.md),
+                const SizedBox(height: AppSpacing.sm),
+                // ── Global Language Selector Strip (1-tap switch) ─────────
+                const _HomeLanguageBar(),
+                const SizedBox(height: AppSpacing.sm),
                 // ── Farmer greeting card ──────────────────────────────────
                 _FarmerGreetingCard(),
                 const SizedBox(height: AppSpacing.md),
                 // ── Voice search bar ──────────────────────────────────────
-                VoiceSearchBar(
-                  hint: "Tap to speak: 'Sell 20Q Onion' or 'Check Vashi Bhav'",
-                  isListening: _isListening,
-                  onMicTap: () =>
-                      setState(() => _isListening = !_isListening),
-                ),
+                Builder(builder: (ctx) {
+                  final l10n = AppLocalizations.of(ctx);
+                  return VoiceSearchBar(
+                    hint: l10n?.tapToSpeak ??
+                        "Tap to speak: 'Sell 20Q Onion' or 'Check Vashi Bhav'",
+                    isListening: _isListening,
+                    onMicTap: () =>
+                        setState(() => _isListening = !_isListening),
+                  );
+                }),
                 const SizedBox(height: AppSpacing.md),
                 // ── Active trade strip ────────────────────────────────────
                 _ActiveTradeStrip(),
                 const SizedBox(height: AppSpacing.md),
                 // ── Live mandi pulse section ──────────────────────────────
-                _SectionHeader(
-                  title: 'Live Mandi Pulse',
-                  actionLabel: 'View All',
-                  onAction: () => context.go(AppRoutes.markets),
-                ),
+                Builder(builder: (ctx) {
+                  final l10n = AppLocalizations.of(ctx);
+                  return _SectionHeader(
+                    title: l10n?.liveMandiPulse ?? 'Live Mandi Pulse',
+                    actionLabel: l10n?.viewAll ?? 'View All',
+                    onAction: () => ctx.go(AppRoutes.markets),
+                  );
+                }),
                 const SizedBox(height: AppSpacing.xs),
                 const _MandiPulseRow(),
                 const SizedBox(height: AppSpacing.md),
                 // ── Action cards ──────────────────────────────────────────
-                _SectionHeader(title: 'What would you like to do?'),
+                Builder(builder: (ctx) {
+                  final l10n = AppLocalizations.of(ctx);
+                  return _SectionHeader(title: l10n?.whatWouldYouLikeToDo ?? 'What would you like to do?');
+                }),
                 const SizedBox(height: AppSpacing.xs),
                 _ActionCards(),
                 const SizedBox(height: AppSpacing.md),
@@ -112,16 +129,8 @@ class _DashboardHeader extends StatelessWidget {
               horizontal: AppSpacing.md, vertical: 8),
           child: Row(
             children: [
-              // Logo + live indicator
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.eco, color: Colors.white, size: 20),
-              ),
+              // Actual KrishiChakra logo
+              const KrishiChakraLogo(size: 36),
               const SizedBox(width: 8),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -135,23 +144,29 @@ class _DashboardHeader extends StatelessWidget {
                       color: AppColors.primary,
                     ),
                   ),
-                  Row(
+                   Row(
                     children: [
                       LivePulsingDot(color: AppColors.secondary, size: 6),
                       const SizedBox(width: 4),
-                      Text(
-                        '5G MandiLink',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: AppColors.secondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Builder(builder: (ctx) {
+                        final l10n = AppLocalizations.of(ctx);
+                        return Text(
+                          l10n?.mandiLinkSubtitle ?? '5G MandiLink',
+                          style: const TextStyle(
+                            fontSize: 10,
+                            color: AppColors.secondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      }),
                     ],
                   ),
                 ],
               ),
               const Spacer(),
+              // Language selector
+              const LanguageSelectorButton(),
+              const SizedBox(width: AppSpacing.xs),
               // Toll-free
               InkWell(
                 onTap: () {},
@@ -168,7 +183,7 @@ class _DashboardHeader extends StatelessWidget {
                       Icon(Icons.support_agent,
                           size: 14, color: AppColors.secondary),
                       const SizedBox(width: 4),
-                      Text(
+                      const Text(
                         '1800-180-1551',
                         style: TextStyle(
                           fontSize: 10,
@@ -228,6 +243,97 @@ class _DashboardHeader extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Global Language Selector Strip ──────────────────────────────────────────
+
+class _HomeLanguageBar extends ConsumerWidget {
+  const _HomeLanguageBar();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(languageProvider);
+    final notifier = ref.read(languageProvider.notifier);
+
+    final languages = [
+      (const Locale('en'), 'English'),
+      (const Locale('mr'), 'मराठी'),
+      (const Locale('hi'), 'हिंदी'),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          const Text('🌐', style: TextStyle(fontSize: 14)),
+          const SizedBox(width: 8),
+          Text(
+            'Language / भाषा:',
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              color: AppColors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: languages.map((lang) {
+                final isSelected = lang.$1.languageCode == currentLocale.languageCode;
+                return Padding(
+                  padding: const EdgeInsets.only(left: 6),
+                  child: InkWell(
+                    onTap: () => notifier.setLocale(lang.$1),
+                    borderRadius: BorderRadius.circular(8),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primaryContainer
+                            : AppColors.surfaceContainerHigh.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primary
+                              : Colors.transparent,
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        lang.$2,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
+                          color: isSelected ? Colors.white : AppColors.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -307,14 +413,17 @@ class _FarmerGreetingCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '[Change]',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppColors.secondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    Builder(builder: (ctx) {
+                      final l10n = AppLocalizations.of(ctx);
+                      return Text(
+                        l10n?.change ?? '[Change]',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: AppColors.secondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      );
+                    }),
                   ],
                 ),
               ],
@@ -358,7 +467,7 @@ class _ActiveTradeStrip extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Lot #ON-9021 • 20Q Onion',
                   style: TextStyle(
                     fontSize: 13,
@@ -366,27 +475,37 @@ class _ActiveTradeStrip extends StatelessWidget {
                     color: AppColors.onSurface,
                   ),
                 ),
-                Text(
-                  '2 Offers Waiting • Top Bid ₹2,600/Q',
-                  style: TextStyle(
-                      fontSize: 12, color: AppColors.onSurfaceVariant),
-                ),
+                Builder(builder: (ctx) {
+                  return const Text(
+                    '2 Offers Waiting • Top Bid ₹2,600/Q',
+                    style: TextStyle(
+                        fontSize: 12, color: AppColors.onSurfaceVariant),
+                  );
+                }),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              _SmallActionButton(
-                label: 'Review Offers',
-                onTap: () {},
-              ),
-              const SizedBox(height: 4),
-              _SmallActionButton(
-                label: 'Track Transit',
-                onTap: () {},
-                isSecondary: true,
-              ),
+              Builder(builder: (ctx) {
+                final l10n = AppLocalizations.of(ctx);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    _SmallActionButton(
+                      label: l10n?.reviewOffers ?? 'Review Offers',
+                      onTap: () {},
+                    ),
+                    const SizedBox(height: 4),
+                    _SmallActionButton(
+                      label: l10n?.trackTransit ?? 'Track Transit',
+                      onTap: () {},
+                      isSecondary: true,
+                    ),
+                  ],
+                );
+              }),
             ],
           ),
         ],
@@ -472,43 +591,28 @@ class _SectionHeader extends StatelessWidget {
 
 class _MandiPulseItem {
   const _MandiPulseItem({
-    required this.emoji,
     required this.name,
     required this.commodity,
+    this.normalizedName,
     required this.market,
     required this.price,
-    required this.change,
+    this.change,
     required this.advisory,
     required this.isUp,
     required this.source,
     this.arrivalDate,
   });
 
-  final String emoji;
   final String name;
   final String commodity;
+  final String? normalizedName;
   final String market;
   final double price;
-  final double change;
+  final double? change;
   final String advisory;
   final bool isUp;
   final String source;
   final String? arrivalDate;
-}
-
-String _getCommodityEmoji(String name) {
-  final lower = name.toLowerCase();
-  if (lower.contains('onion')) return '🧅';
-  if (lower.contains('tomato')) return '🍅';
-  if (lower.contains('soybean') || lower.contains('soya')) return '🌱';
-  if (lower.contains('potato')) return '🥔';
-  if (lower.contains('wheat')) return '🌾';
-  if (lower.contains('rice') || lower.contains('paddy')) return '🍚';
-  if (lower.contains('cotton')) return '⚪';
-  if (lower.contains('chilli') || lower.contains('chili')) return '🌶️';
-  if (lower.contains('garlic')) return '🧄';
-  if (lower.contains('ginger')) return '🫚';
-  return '🌾';
 }
 
 class _MandiPulseRow extends ConsumerWidget {
@@ -516,34 +620,52 @@ class _MandiPulseRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final statusAsync = ref.watch(mandiStatusProvider);
-    final pricesAsync = ref.watch(latestMandiPricesProvider(null));
+    final pulseAsync = ref.watch(mandiPulseProvider('Maharashtra'));
 
     final status = statusAsync.asData?.value;
     final isLive = status?.isLive ?? false;
     final isFailed = status?.hasFailedSync ?? false;
     final lastUpdated = status?.lastSuccessfulSync ?? status?.lastSync;
 
-    return pricesAsync.when(
+    return pulseAsync.when(
       loading: () => SizedBox(
-        height: 140,
+        height: 146,
         child: ListView.separated(
           scrollDirection: Axis.horizontal,
           itemCount: 3,
           separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.xs),
           itemBuilder: (_, __) => Container(
-            width: 200,
+            width: 212,
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: AppColors.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
+            child: Builder(builder: (ctx) {
+              final l10n = AppLocalizations.of(ctx);
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    l10n?.loadingGovData ?? 'Loading government market data...',
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              );
+            }),
           ),
         ),
       ),
@@ -555,25 +677,28 @@ class _MandiPulseRow extends ConsumerWidget {
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: AppColors.outlineVariant),
         ),
-        child: Row(
-          children: [
-            Icon(Icons.info_outline, color: AppColors.onSurfaceVariant),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Showing last available government data (Sync check failed)',
-                style: TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant),
+        child: Builder(builder: (ctx) {
+          final l10n = AppLocalizations.of(ctx);
+          return Row(
+            children: [
+              Icon(Icons.info_outline, color: AppColors.onSurfaceVariant),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n?.govSourceUnavailable ?? 'Government source temporarily unavailable.',
+                  style: TextStyle(fontSize: 12, color: AppColors.onSurfaceVariant),
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.invalidate(mandiStatusProvider);
-                ref.invalidate(latestMandiPricesProvider);
-              },
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
+              TextButton(
+                onPressed: () {
+                  ref.invalidate(mandiStatusProvider);
+                  ref.invalidate(mandiPulseProvider);
+                },
+                child: Text(l10n?.retry ?? 'Retry'),
+              ),
+            ],
+          );
+        }),
       ),
       data: (prices) {
         if (prices.isEmpty) {
@@ -586,45 +711,64 @@ class _MandiPulseRow extends ConsumerWidget {
               border: Border.all(color: AppColors.outlineVariant),
             ),
             child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.bar_chart, color: AppColors.onSurfaceVariant),
-                  const SizedBox(width: 8),
-                  Text(
-                    'No government mandi records synchronized yet.',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.onSurfaceVariant,
+              child: Builder(builder: (ctx) {
+                final l10n = AppLocalizations.of(ctx);
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.bar_chart, color: AppColors.onSurfaceVariant),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n?.noMarketDataAvailable ?? 'No market data available for this commodity.',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                );
+              }),
+            ),
+          );
+        }
+
+        final validPrices = prices.where((m) => m.modalPrice > 0).toList();
+        if (validPrices.isEmpty) {
+          return SizedBox(
+            height: 100,
+            child: Center(
+              child: Text(
+                l10n?.noMarketDataAvailable ?? 'No market data available.',
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.onSurfaceVariant,
+                ),
               ),
             ),
           );
         }
 
-        final items = prices.map((m) {
-          final pct = m.minPrice > 0 ? ((m.modalPrice - m.minPrice) / m.minPrice) * 100 : 0.0;
+        final items = validPrices.map((m) {
+          final normName = m.normalizedName ?? m.commodity;
+          final pct = m.priceChangePct;
           return _MandiPulseItem(
-            emoji: _getCommodityEmoji(m.commodity),
-            name: '${m.commodity}${m.variety.isNotEmpty && m.variety != "Other" ? " (${m.variety})" : ""}',
-            commodity: m.commodity,
+            name: normName,
+            commodity: normName,
+            normalizedName: m.normalizedName,
             market: m.market,
             price: m.modalPrice,
-            change: double.parse(pct.clamp(-50.0, 50.0).toStringAsFixed(1)),
-            advisory: m.isLiveGovData
-                ? 'Official Agmarknet • ${m.market}'
-                : 'Market Modal Rate • ${m.market}',
-            isUp: pct >= 0,
+            change: pct,
+            advisory: m.market,
+            isUp: (pct ?? 0.0) >= 0,
             source: m.source,
             arrivalDate: m.arrivalDate,
           );
         }).toList();
 
         return SizedBox(
-          height: 140,
+          height: 146,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
@@ -659,13 +803,13 @@ class _MandiPulseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(
-          '${AppRoutes.markets}/detail?market=${Uri.encodeComponent(item.market)}&commodity=${Uri.encodeComponent(item.commodity)}',
+        context.go(
+          '${AppRoutes.markets}?commodity=${Uri.encodeComponent(item.commodity)}',
         );
       },
       child: Container(
-        width: 200,
-        padding: const EdgeInsets.all(AppSpacing.md),
+        width: 230,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: AppColors.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(12),
@@ -678,16 +822,20 @@ class _MandiPulseCard extends StatelessWidget {
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
-                Text(item.emoji, style: const TextStyle(fontSize: 20)),
-                const SizedBox(width: 6),
+                CommodityIcon(
+                  commodity: item.commodity,
+                  size: 24,
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     item.name,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: AppColors.onSurface,
                     ),
@@ -697,38 +845,57 @@ class _MandiPulseCard extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  formatInr(item.price),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.primary,
+                Flexible(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          formatInr(item.price),
+                          style: TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.primary,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 3),
+                      Text(
+                        '/Q',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppColors.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 6),
-                Text(
-                  '/Q',
-                  style: TextStyle(
-                      fontSize: 11, color: AppColors.onSurfaceVariant),
-                ),
-                const Spacer(),
                 PriceChangeBadge(changePercent: item.change),
               ],
             ),
-            const SizedBox(height: 6),
-            Expanded(
+            const SizedBox(height: 4),
+            Flexible(
               child: Text(
                 item.advisory,
                 style: TextStyle(
                   fontSize: 11,
-                  color: item.isUp ? AppColors.secondary : AppColors.tertiary,
+                  color: item.change == null
+                      ? AppColors.onSurfaceVariant
+                      : (item.isUp ? AppColors.secondary : AppColors.tertiary),
                   fontWeight: FontWeight.w600,
                 ),
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -753,13 +920,14 @@ class _MandiPulseCard extends StatelessWidget {
 class _ActionCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
         _ActionCard(
           icon: Icons.inventory_2_outlined,
-          title: 'Sell Produce & Get Buyer Bids',
-          subtitle: 'Create Harvest Lot',
-          tag: 'RECOMMENDED',
+          title: l10n?.sellProduceGetBuyerBids ?? 'Sell Produce & Get Buyer Bids',
+          subtitle: l10n?.createHarvestLot ?? 'Create Harvest Lot',
+          tag: l10n?.recommended ?? 'RECOMMENDED',
           tagColor: AppColors.secondary,
           onTap: () => context.push(AppRoutes.produceListing),
           isRecommended: true,
@@ -767,22 +935,22 @@ class _ActionCards extends StatelessWidget {
         const SizedBox(height: AppSpacing.xs),
         _ActionCard(
           icon: Icons.calculate_outlined,
-          title: 'Net Profit & Mandi Calculator',
-          subtitle: 'Find Highest Paying Mandi',
+          title: l10n?.netProfitMandiCalculator ?? 'Net Profit & Mandi Calculator',
+          subtitle: l10n?.findHighestPayingMandi ?? 'Find Highest Paying Mandi',
           onTap: () => context.push(AppRoutes.netRealization),
         ),
         const SizedBox(height: AppSpacing.xs),
         _ActionCard(
           icon: Icons.warehouse_outlined,
-          title: 'Cold Storage & 70% Instant Cash Loan',
-          subtitle: 'e-NWR • MSWC • Book Storage & Apply for Loan',
+          title: l10n?.coldStorageInstantLoan ?? 'Cold Storage & 70% Instant Cash Loan',
+          subtitle: l10n?.coldStorageSubtitle ?? 'e-NWR • MSWC • Book Storage & Apply for Loan',
           onTap: () => context.push(AppRoutes.storageBooking),
         ),
         const SizedBox(height: AppSpacing.xs),
         _ActionCard(
           icon: Icons.local_shipping_outlined,
-          title: 'Discounted Return-Truck Transport',
-          subtitle: '35% freight discount • Book Logistics',
+          title: l10n?.discountedTransport ?? 'Discounted Return-Truck Transport',
+          subtitle: l10n?.discountedTransportSubtitle ?? '35% freight discount • Book Logistics',
           onTap: () => context.push(AppRoutes.logisticsBooking),
         ),
       ],
@@ -921,15 +1089,18 @@ class _TrustStrip extends StatelessWidget {
           Icon(Icons.verified_user, size: 14, color: AppColors.secondary),
           const SizedBox(width: 4),
           Flexible(
-            child: Text(
-              'Government Agri Stack Ready • e-NAM & MSWC Integrated',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            child: Builder(builder: (ctx) {
+              final l10n = AppLocalizations.of(ctx);
+              return Text(
+                l10n?.govAgriStackReady ?? 'Government Agri Stack Ready • e-NAM & MSWC Integrated',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w500,
+                ),
+              );
+            }),
           ),
         ],
       ),

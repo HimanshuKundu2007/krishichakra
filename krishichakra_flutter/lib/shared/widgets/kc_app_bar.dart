@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
+import 'krishichakra_logo.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Shared KrishiChakra app header bar.
 /// Matches the Stitch sticky header: logo/title + right actions.
@@ -95,16 +97,8 @@ class _KcLogo extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Chakra logo mark
-        Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: AppColors.primary,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(Icons.eco, color: Colors.white, size: 20),
-        ),
+        // Actual KrishiChakra logo
+        const KrishiChakraLogo(size: 36),
         const SizedBox(width: 6),
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -123,8 +117,8 @@ class _KcLogo extends StatelessWidget {
                   _PulsingDot(color: AppColors.secondary),
                   const SizedBox(width: 3),
                   Text(
-                    '5G MandiLink',
-                    style: TextStyle(
+                    AppLocalizations.of(context)?.mandiLinkSubtitle ?? '5G MandiLink',
+                    style: const TextStyle(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
                       color: AppColors.secondary,

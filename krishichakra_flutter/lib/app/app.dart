@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'router.dart';
 import '../core/theme/app_theme.dart';
+import '../core/providers/language_provider.dart';
+import '../l10n/app_localizations.dart';
 
 class KrishiChakraApp extends ConsumerWidget {
   const KrishiChakraApp({super.key});
@@ -10,24 +11,19 @@ class KrishiChakraApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final locale = ref.watch(languageProvider);
 
     return MaterialApp.router(
       title: 'KrishiChakra',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.lightTheme, // Stitch uses light theme only
+      darkTheme: AppTheme.lightTheme,
       themeMode: ThemeMode.light,
       routerConfig: router,
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('hi'),
-        Locale('mr'),
-      ],
+      // ── Localization ──────────────────────────────────────────────────────
+      locale: locale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }

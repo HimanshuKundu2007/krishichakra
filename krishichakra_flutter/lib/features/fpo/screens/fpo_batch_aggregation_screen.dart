@@ -1,3 +1,4 @@
+import '../../../l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/models.dart';
@@ -5,7 +6,6 @@ import '../../../core/repositories/fpo_repository.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_spacing.dart';
 import '../../../shared/widgets/kc_app_bar.dart';
-import '../../../shared/widgets/kc_widgets.dart';
 
 class FpoBatchAggregationScreen extends ConsumerStatefulWidget {
   const FpoBatchAggregationScreen({super.key, this.batchId = 1});
@@ -59,6 +59,7 @@ class _FpoBatchAggregationScreenState
   }
 
   void _showAddLotSheet(BuildContext context, int batchId) {
+    final l10n = AppLocalizations.of(context)!;
     final nameCtrl = TextEditingController();
     final qtyCtrl = TextEditingController(text: '15');
     String selectedGrade = 'Grade A';
@@ -90,7 +91,7 @@ class _FpoBatchAggregationScreenState
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close),
+                    icon: Icon(Icons.close),
                     onPressed: () => Navigator.pop(ctx),
                   ),
                 ],
@@ -114,8 +115,8 @@ class _FpoBatchAggregationScreenState
               TextField(
                 controller: qtyCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Quantity (Quintals)',
+                decoration: InputDecoration(
+                  labelText: l10n.quantityInQuintals,
                   hintText: 'e.g. 15',
                   border: OutlineInputBorder(),
                 ),
@@ -153,7 +154,7 @@ class _FpoBatchAggregationScreenState
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  icon: const Icon(Icons.add_task),
+                  icon: Icon(Icons.add_task),
                   label: const Text(
                     'Submit to Gatekeeper Audit',
                     style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
@@ -169,7 +170,7 @@ class _FpoBatchAggregationScreenState
                             quantityQuintal: qty,
                             grade: selectedGrade,
                             bulbSpec: selectedGrade == 'Grade A'
-                                ? '52–58mm bulb'
+                                ? '52â€“58mm bulb'
                                 : '<45mm Uniformity',
                             moisturePct: 12.0,
                           );
@@ -177,7 +178,7 @@ class _FpoBatchAggregationScreenState
                           fpoBatchAggregationProvider(widget.batchId));
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             backgroundColor: AppColors.primary,
                             content: Text(
                                 'Lot processed through backend Gatekeeper quality check!'),
@@ -233,7 +234,7 @@ class _FpoBatchAggregationScreenState
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.close),
+                        icon: Icon(Icons.close),
                         onPressed: () => Navigator.pop(ctx),
                       ),
                     ],
@@ -320,6 +321,7 @@ class _FpoBatchAggregationScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final asyncAggregation =
         ref.watch(fpoBatchAggregationProvider(widget.batchId));
 
@@ -352,7 +354,7 @@ class _FpoBatchAggregationScreenState
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline,
+                  Icon(Icons.error_outline,
                       size: 48, color: AppColors.error),
                   const SizedBox(height: 16),
                   Text('Failed to load batch: $err',
@@ -373,6 +375,7 @@ class _FpoBatchAggregationScreenState
   }
 
   Widget _buildContent(BuildContext context, FpoBatchAggregation agg) {
+    final l10n = AppLocalizations.of(context)!;
     final isDispatched =
         agg.status == 'dispatched' || _dispatchedEwayBill != null;
     final remainingTonnes =
@@ -384,22 +387,23 @@ class _FpoBatchAggregationScreenState
     return CustomScrollView(
       slivers: [
         SliverAppBar(
+          automaticallyImplyLeading: false,
           floating: false,
           pinned: true,
           expandedHeight: AppSpacing.headerHeight,
           backgroundColor: Colors.transparent,
           flexibleSpace: KcAppBar(
-            title: 'Fpo Batch Aggregation',
+            title: l10n.fpoBatchAggregation,
             subtitle: agg.fpoName,
             showBack: true,
             actions: [
               IconButton(
-                icon: const Icon(Icons.group, size: 22),
+                icon: Icon(Icons.group, size: 22),
                 tooltip: 'FPO Members',
                 onPressed: () => _showFpoDirectorySheet(context, agg.fpoId),
               ),
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, size: 22),
+                icon: Icon(Icons.notifications_outlined, size: 22),
                 tooltip: 'Notifications',
                 onPressed: () {},
               ),
@@ -414,35 +418,35 @@ class _FpoBatchAggregationScreenState
             delegate: SliverChildListDelegate([
               const SizedBox(height: 8),
 
-              // ── 1. FPO Brand & Credential Strip ─────────────────────────────
+              // â”€â”€ 1. FPO Brand & Credential Strip â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildFpoBrandStrip(context, agg),
               const SizedBox(height: 12),
 
-              // ── 2. Active Consignment Card ──────────────────────────────────
+              // â”€â”€ 2. Active Consignment Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildActiveConsignmentCard(agg),
               const SizedBox(height: 14),
 
-              // ── 3. Batch Consolidation Progress Card ────────────────────────
+              // â”€â”€ 3. Batch Consolidation Progress Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildProgressCard(agg, stagedTonnes, targetTonnes, remainingTonnes),
               const SizedBox(height: 14),
 
-              // ── 4. Photo Snapshot of Staging Bay ────────────────────────────
+              // â”€â”€ 4. Photo Snapshot of Staging Bay â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildStagingBaySnapshot(agg),
               const SizedBox(height: 16),
 
-              // ── 5. Member Contributed Lots (Gatekeeper Quality) ─────────────
+              // â”€â”€ 5. Member Contributed Lots (Gatekeeper Quality) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildMemberLotsSection(context, agg),
               const SizedBox(height: 16),
 
-              // ── 6. Assigned Logistics & Transport ───────────────────────────
+              // â”€â”€ 6. Assigned Logistics & Transport â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildLogisticsCard(agg),
               const SizedBox(height: 16),
 
-              // ── 7. Financial Ledger Realization (Escrow Protected) ──────────
+              // â”€â”€ 7. Financial Ledger Realization (Escrow Protected) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildFinancialLedgerCard(agg),
               const SizedBox(height: 20),
 
-              // ── 8. Sticky Bottom Seal & Dispatch Action ─────────────────────
+              // â”€â”€ 8. Sticky Bottom Seal & Dispatch Action â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
               _buildDispatchSection(agg, isDispatched),
               const SizedBox(height: 32),
             ]),
@@ -466,7 +470,7 @@ class _FpoBatchAggregationScreenState
                   color: AppColors.primaryContainer,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.corporate_fare,
                   color: Colors.white,
                   size: 24,
@@ -619,7 +623,7 @@ class _FpoBatchAggregationScreenState
                 ],
               ),
               IconButton(
-                icon: const Icon(Icons.volume_up,
+                icon: Icon(Icons.volume_up,
                     color: AppColors.primaryContainer),
                 tooltip: 'Audio summary',
                 onPressed: () {
@@ -648,7 +652,7 @@ class _FpoBatchAggregationScreenState
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.eco,
+                    Icon(Icons.eco,
                         size: 15, color: AppColors.onTertiaryFixed),
                     const SizedBox(width: 4),
                     Text(
@@ -796,7 +800,7 @@ class _FpoBatchAggregationScreenState
                     color: AppColors.secondaryContainer,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.trending_up,
+                  child: Icon(Icons.trending_up,
                       size: 20, color: AppColors.onSecondaryContainer),
                 ),
                 const SizedBox(width: 10),
@@ -869,12 +873,12 @@ class _FpoBatchAggregationScreenState
                   ),
                 ),
               ),
-              const Icon(Icons.videocam, color: Colors.white70, size: 18),
+              Icon(Icons.videocam, color: Colors.white70, size: 18),
             ],
           ),
           Row(
             children: [
-              const Icon(Icons.inventory_2,
+              Icon(Icons.inventory_2,
                   color: AppColors.secondaryFixed, size: 20),
               const SizedBox(width: 8),
               Expanded(
@@ -958,7 +962,7 @@ class _FpoBatchAggregationScreenState
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add_circle,
+                  icon: Icon(Icons.add_circle,
                       color: AppColors.primaryContainer),
                   tooltip: 'Contribute lot',
                   onPressed: () => _showAddLotSheet(context, agg.id),
@@ -1159,7 +1163,7 @@ class _FpoBatchAggregationScreenState
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.qr_code_2,
+                    Icon(Icons.qr_code_2,
                         size: 16, color: AppColors.primaryContainer),
                     const SizedBox(width: 4),
                     Text(
@@ -1273,7 +1277,7 @@ class _FpoBatchAggregationScreenState
                     color: AppColors.primaryContainer,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.local_shipping,
+                  child: Icon(Icons.local_shipping,
                       color: Colors.white, size: 22),
                 ),
                 const SizedBox(width: 10),
@@ -1310,7 +1314,7 @@ class _FpoBatchAggregationScreenState
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.pin_drop,
+                          Icon(Icons.pin_drop,
                               size: 13, color: AppColors.primaryContainer),
                           const SizedBox(width: 3),
                           Expanded(
@@ -1496,7 +1500,7 @@ class _FpoBatchAggregationScreenState
                       ),
                       if (!isDispatched) ...[
                         const SizedBox(width: 6),
-                        const Icon(Icons.arrow_forward, size: 18),
+                        Icon(Icons.arrow_forward, size: 18),
                       ],
                     ],
                   ),
